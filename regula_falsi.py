@@ -1,63 +1,75 @@
+import numpy as np
+
 def regula_falsi(f, a, b, tol=1e-6, max_iter=100):
     """
-    Find the root of a function using the Regula Falsi (False Position) method.
+    Método de Regula Falsi (Falsa Posición) para encontrar raíces de ecuaciones.
     
-    Parameters:
+    Parámetros:
     -----------
-    f : function
-        The function for which we want to find the root
-    a, b : float
-        The interval [a, b] where f(a) and f(b) have opposite signs
-    tol : float, optional
-        Tolerance for convergence (default: 1e-6)
-    max_iter : int, optional
-        Maximum number of iterations (default: 100)
-    
-    Returns:
+    f : función
+        Función de la cual se busca la raíz
+    a : float
+        Límite inferior del intervalo inicial
+    b : float
+        Límite superior del intervalo inicial
+    tol : float, opcional
+        Tolerancia para el criterio de convergencia
+    max_iter : int, opcional
+        Número máximo de iteraciones
+        
+    Retorna:
     --------
     float
-        The approximate root of the function
+        La aproximación de la raíz encontrada
     int
-        Number of iterations performed
+        Número de iteraciones realizadas
+    list
+        Lista de aproximaciones intermedias
     """
-    # Check if f(a) and f(b) have opposite signs
+    # Verificar que f(a) y f(b) tengan signos opuestos
     if f(a) * f(b) >= 0:
-        raise ValueError("Function values at interval endpoints must have opposite signs")
+        raise ValueError("La función debe tener signos opuestos en los extremos del intervalo")
     
     fa = f(a)
     fb = f(b)
-    iter_count = 0
+    iteraciones = 0
+    aproximaciones = []
     
-    while iter_count < max_iter:
-        # Calculate the false position (weighted average based on function values)
+    while iteraciones < max_iter:
+        # Calcular el punto de intersección con el eje x
         c = (a * fb - b * fa) / (fb - fa)
+        aproximaciones.append(c)
         fc = f(c)
         
-        if abs(fc) < tol:  # If we're close enough to zero
-            return c, iter_count
+        if abs(fc) < tol:  # Convergencia alcanzada
+            return c, iteraciones, aproximaciones
         
-        if fa * fc < 0:  # Root is in [a, c]
+        if fa * fc < 0:  # Raíz está en [a, c]
             b = c
             fb = fc
-        else:  # Root is in [c, b]
+        else:  # Raíz está en [c, b]
             a = c
             fa = fc
             
-        # Check if the interval is small enough
+        # Verificar si el intervalo es suficientemente pequeño
         if abs(b - a) < tol:
-            return c, iter_count
+            return c, iteraciones, aproximaciones
             
-        iter_count += 1
+        iteraciones += 1
     
-    return c, iter_count  # Return the last approximation
+    # Retornar la última aproximación si se alcanza el máximo de iteraciones
+    return c, iteraciones, aproximaciones
 
-# Example usage
+# Ejemplo de uso
 if __name__ == "__main__":
-    # Example function: f(x) = x^3 - x - 2
-    def f(x):
+    # Definir una función de ejemplo: f(x) = x^3 - x - 2
+    def funcion_ejemplo(x):
         return x**3 - x - 2
     
-    root, iterations = regula_falsi(f, 1, 2)
-    print(f"Root found: {root}")
-    print(f"Function value at root: {f(root)}")
-    print(f"Iterations: {iterations}")
+    # Intervalo inicial [1, 2]
+    raiz, iteraciones, aproximaciones = regula_falsi(funcion_ejemplo, 1, 2)
+    
+    print(f"Raíz aproximada: {raiz}")
+    print(f"Valor de la función en la raíz: {funcion_ejemplo(raiz)}")
+    print(f"Iteraciones realizadas: {iteraciones}")
+    print(f"Aproximaciones intermedias: {aproximaciones}")

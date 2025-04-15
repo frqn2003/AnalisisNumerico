@@ -2,75 +2,85 @@ import numpy as np
 
 def jacobi(A, b, x0=None, tol=1e-6, max_iter=100):
     """
-    Solve a system of linear equations Ax = b using the Jacobi method.
+    Método de Jacobi para resolver sistemas de ecuaciones lineales.
     
-    Parameters:
+    Parámetros:
     -----------
     A : numpy.ndarray
-        Coefficient matrix (n x n)
+        Matriz de coeficientes
     b : numpy.ndarray
-        Right-hand side vector (n)
-    x0 : numpy.ndarray, optional
-        Initial guess for the solution (default: zeros)
-    tol : float, optional
-        Tolerance for convergence (default: 1e-6)
-    max_iter : int, optional
-        Maximum number of iterations (default: 100)
-    
-    Returns:
+        Vector de términos independientes
+    x0 : numpy.ndarray, opcional
+        Vector inicial de aproximación
+    tol : float, opcional
+        Tolerancia para el criterio de convergencia
+    max_iter : int, opcional
+        Número máximo de iteraciones
+        
+    Retorna:
     --------
     numpy.ndarray
-        The approximate solution vector
+        Vector solución
     int
-        Number of iterations performed
-    bool
-        Whether the method converged
+        Número de iteraciones realizadas
+    list
+        Lista de aproximaciones intermedias
     """
+    # Convertir las entradas a arrays de numpy
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float)
+    
+    # Obtener dimensiones
     n = len(b)
     
-    # Check if A is a square matrix
+    # Verificar que la matriz es cuadrada
     if A.shape[0] != A.shape[1]:
-        raise ValueError("Matrix A must be square")
+        raise ValueError("La matriz A debe ser cuadrada")
     
-    # Check if A and b have compatible dimensions
+    # Verificar que A y b tienen dimensiones compatibles
     if A.shape[0] != len(b):
-        raise ValueError("Dimensions of A and b are not compatible")
+        raise ValueError("Las dimensiones de A y b no son compatibles")
     
-    # Initialize x if not provided
+    # Inicializar el vector de solución
     if x0 is None:
         x = np.zeros(n)
     else:
-        x = x0.copy()
+        x = np.array(x0, dtype=float)
     
-    # Iterate until convergence or max iterations
+    # Lista para almacenar aproximaciones
+    aproximaciones = [x.copy()]
+    
+    # Iteraciones
     for iter_count in range(max_iter):
-        x_new = np.zeros(n)
+        x_nueva = np.zeros(n)
         
-        # Update each component of x
         for i in range(n):
-            # Calculate the sum of known terms
-            sum_terms = sum(A[i, j] * x[j] for j in range(n) if j != i)
-            
-            # Check for division by zero
+            # Verificar división por cero
             if A[i, i] == 0:
-                raise ValueError(f"Division by zero encountered at row {i}. Consider reordering the equations.")
+                raise ValueError(f"División por cero encontrada en la fila {i}. Considere reordenar las ecuaciones.")
+                
+            # Suma de todos los términos excepto el término diagonal
+            suma = np.dot(A[i, :], x) - A[i, i] * x[i]
             
-            # Update x_new[i]
-            x_new[i] = (b[i] - sum_terms) / A[i, i]
+            # Actualizar x_i
+            x_nueva[i] = (b[i] - suma) / A[i, i]
         
-        # Check for convergence
-        if np.linalg.norm(x_new - x, np.inf) < tol:
-            return x_new, iter_count + 1, True
+        # Guardar la aproximación actual
+        aproximaciones.append(x_nueva.copy())
         
-        # Update x for next iteration
-        x = x_new.copy()
+        # Verificar convergencia
+        if np.linalg.norm(x_nueva - x, np.inf) < tol:
+            return x_nueva, iter_count + 1, aproximaciones
+        
+        # Actualizar x para la siguiente iteración
+        x = x_nueva.copy()
     
-    # If we've reached max_iter without converging
-    return x, max_iter, False
+    # Si se alcanza el máximo de iteraciones
+    return x, max_iter, aproximaciones
 
-# Example usage
+# Ejemplo de uso
 if __name__ == "__main__":
-    # Example system:
+    # Sistema de ecuaciones:
     # 4x + y - z = 7
     # x + 5y + 2z = 8
     # 2x + y + 6z = 9
@@ -83,11 +93,15 @@ if __name__ == "__main__":
     
     b = np.array([7, 8, 9])
     
-    solution, iterations, converged = jacobi(A, b)
+    # Valor inicial
+    x0 = np.zeros(3)
     
-    print(f"Solution: {solution}")
-    print(f"Iterations: {iterations}")
-    print(f"Converged: {converged}")
+    # Resolver el sistema
+    solucion, iteraciones, aproximaciones = jacobi(A, b, x0)
     
-    # Verify the solution
-    print(f"Verification (Ax - b): {np.dot(A, solution) - b}")
+    print(f"Solución: {solucion}")
+    print(f"Iteraciones realizadas: {iteraciones}")
+    print(f"Aproximación final: {aproximaciones[-1]}")
+    
+    # Verificar la solución
+    print(f"Verificación (Ax - b): {np.dot(A, solucion) - b}")

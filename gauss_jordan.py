@@ -2,62 +2,69 @@ import numpy as np
 
 def gauss_jordan(A, b):
     """
-    Solve a system of linear equations Ax = b using Gauss-Jordan elimination.
+    Método de Gauss-Jordan para resolver sistemas de ecuaciones lineales.
     
-    Parameters:
+    Parámetros:
     -----------
     A : numpy.ndarray
-        Coefficient matrix (n x n)
+        Matriz de coeficientes
     b : numpy.ndarray
-        Right-hand side vector (n)
-    
-    Returns:
+        Vector de términos independientes
+        
+    Retorna:
     --------
     numpy.ndarray
-        The solution vector
+        Vector solución
     """
+    # Convertir las entradas a arrays de numpy y asegurar que son de tipo float
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float)
+    
+    # Obtener dimensiones
     n = len(b)
     
-    # Check if A is a square matrix
+    # Verificar que la matriz es cuadrada
     if A.shape[0] != A.shape[1]:
-        raise ValueError("Matrix A must be square")
+        raise ValueError("La matriz A debe ser cuadrada")
     
-    # Check if A and b have compatible dimensions
+    # Verificar que A y b tienen dimensiones compatibles
     if A.shape[0] != len(b):
-        raise ValueError("Dimensions of A and b are not compatible")
+        raise ValueError("Las dimensiones de A y b no son compatibles")
     
-    # Create the augmented matrix [A|b]
-    aug = np.column_stack((A, b))
+    # Crear la matriz aumentada [A|b]
+    Ab = np.column_stack((A, b))
     
-    # Gauss-Jordan elimination
+    # Aplicar eliminación de Gauss-Jordan
     for i in range(n):
-        # Find the pivot row
-        max_row = i + np.argmax(abs(aug[i:, i]))
+        # Pivoteo parcial: encontrar el pivote máximo en la columna i
+        max_index = i + np.argmax(abs(Ab[i:, i]))
         
-        # Swap the current row with the pivot row
-        if max_row != i:
-            aug[[i, max_row]] = aug[[max_row, i]]
+        # Intercambiar filas si es necesario
+        if max_index != i:
+            Ab[[i, max_index]] = Ab[[max_index, i]]
         
-        # Check for singular matrix
-        if abs(aug[i, i]) < 1e-10:
-            raise ValueError("Matrix is singular or nearly singular")
+        # Verificar si la matriz es singular
+        pivot = Ab[i, i]
+        if abs(pivot) < 1e-10:
+            raise ValueError("La matriz es singular o casi singular")
         
-        # Scale the pivot row to make the pivot element 1
-        aug[i] = aug[i] / aug[i, i]
+        # Dividir la fila i por el pivot para obtener un 1 en la posición (i,i)
+        Ab[i] = Ab[i] / pivot
         
-        # Eliminate other rows
+        # Hacer ceros por encima y por debajo del pivote
         for j in range(n):
             if j != i:
-                aug[j] = aug[j] - aug[j, i] * aug[i]
+                factor = Ab[j, i]
+                Ab[j] = Ab[j] - factor * Ab[i]
     
-    # Extract the solution
-    x = aug[:, n]
+    # Extraer la solución (última columna de la matriz aumentada)
+    x = Ab[:, -1]
     
     return x
 
-# Example usage
+# Ejemplo de uso
 if __name__ == "__main__":
-    # Example system:
+    # Sistema de ecuaciones:
     # 2x + y - z = 8
     # -3x - y + 2z = -11
     # -2x + y + 2z = -3
@@ -70,9 +77,12 @@ if __name__ == "__main__":
     
     b = np.array([8, -11, -3])
     
-    solution = gauss_jordan(A, b)
+    # Resolver el sistema
+    solucion = gauss_jordan(A, b)
     
-    print(f"Solution: {solution}")
+    print(f"Solución: {solucion}")
     
-    # Verify the solution
-    print(f"Verification (Ax - b): {np.dot(A, solution) - b}")
+    # Verificar la solución
+    print(f"Verificación (A·x): {np.dot(A, solucion)}")
+    print(f"Vector b original: {b}")
+    print(f"Diferencia (A·x - b): {np.dot(A, solucion) - b}")

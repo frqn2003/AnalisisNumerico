@@ -1,66 +1,79 @@
+import numpy as np
+
 def newton(f, df, x0, tol=1e-6, max_iter=100):
     """
-    Find the root of a function using Newton's method.
+    Método de Newton-Raphson para encontrar raíces de ecuaciones.
     
-    Parameters:
+    Parámetros:
     -----------
-    f : function
-        The function for which we want to find the root
-    df : function
-        The derivative of the function f
+    f : función
+        Función de la cual se busca la raíz
+    df : función
+        Derivada de la función f
     x0 : float
-        Initial guess for the root
-    tol : float, optional
-        Tolerance for convergence (default: 1e-6)
-    max_iter : int, optional
-        Maximum number of iterations (default: 100)
-    
-    Returns:
+        Aproximación inicial de la raíz
+    tol : float, opcional
+        Tolerancia para el criterio de convergencia
+    max_iter : int, opcional
+        Número máximo de iteraciones
+        
+    Retorna:
     --------
     float
-        The approximate root of the function
+        La aproximación de la raíz encontrada
     int
-        Number of iterations performed
+        Número de iteraciones realizadas
+    list
+        Lista de aproximaciones intermedias
     """
     x = x0
-    iter_count = 0
+    iteraciones = 0
+    aproximaciones = [x0]
     
-    while iter_count < max_iter:
+    while iteraciones < max_iter:
+        # Calcular el valor de la función en el punto actual
         fx = f(x)
         
-        if abs(fx) < tol:  # If we're close enough to zero
-            return x, iter_count
+        if abs(fx) < tol:  # Si estamos suficientemente cerca de cero
+            return x, iteraciones, aproximaciones
         
-        dfx = df(x)
+        # Calcular derivada en el punto actual
+        derivada = df(x)
         
-        if dfx == 0:
-            raise ValueError("Derivative is zero. Newton's method fails.")
+        # Verificar que la derivada no sea cero
+        if abs(derivada) < 1e-10:
+            raise ValueError(f"Derivada casi cero en x = {x}. El método de Newton no puede continuar.")
         
-        # Newton's formula
-        x_new = x - fx / dfx
+        # Calcular nueva aproximación
+        x_nueva = x - fx / derivada
+        aproximaciones.append(x_nueva)
         
-        # Check for convergence
-        if abs(x_new - x) < tol:
-            return x_new, iter_count
-        
-        x = x_new
-        iter_count += 1
+        # Verificar convergencia
+        if abs(x_nueva - x) < tol:
+            return x_nueva, iteraciones + 1, aproximaciones
+            
+        x = x_nueva
+        iteraciones += 1
     
-    return x, iter_count  # Return the last approximation
+    # Si se alcanza el máximo de iteraciones
+    return x, iteraciones, aproximaciones
 
-# Example usage
+# Ejemplo de uso
 if __name__ == "__main__":
-    import math
-    
-    # Example function: f(x) = x^3 - x - 2
-    def f(x):
+    # Definir una función de ejemplo: f(x) = x^3 - x - 2
+    def funcion_ejemplo(x):
         return x**3 - x - 2
     
-    # Derivative of f(x)
-    def df(x):
+    # Derivada de la función: f'(x) = 3x^2 - 1
+    def derivada_ejemplo(x):
         return 3*x**2 - 1
     
-    root, iterations = newton(f, df, 1.5)
-    print(f"Root found: {root}")
-    print(f"Function value at root: {f(root)}")
-    print(f"Iterations: {iterations}")
+    # Aproximación inicial x0 = 1.5
+    raiz, iteraciones, aproximaciones = newton(funcion_ejemplo, derivada_ejemplo, 1.5)
+    
+    print(f"Raíz aproximada: {raiz}")
+    print(f"Valor de la función en la raíz: {funcion_ejemplo(raiz)}")
+    print(f"Iteraciones realizadas: {iteraciones}")
+    print(f"Aproximaciones intermedias:")
+    for i, aprox in enumerate(aproximaciones):
+        print(f"  Iteración {i}: {aprox}")
