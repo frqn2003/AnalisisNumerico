@@ -1,54 +1,65 @@
+import numpy as np
+
 def bisection(f, a, b, tol=1e-6, max_iter=100):
     """
-    Find the root of a function using the bisection method.
+    Método de Bisección para encontrar raíces de ecuaciones.
     
-    Parameters:
+    Parámetros:
     -----------
-    f : function
-        The function for which we want to find the root
-    a, b : float
-        The interval [a, b] where f(a) and f(b) have opposite signs
-    tol : float, optional
-        Tolerance for convergence (default: 1e-6)
-    max_iter : int, optional
-        Maximum number of iterations (default: 100)
-    
-    Returns:
+    f : función
+        Función de la cual se busca la raíz
+    a : float
+        Límite inferior del intervalo inicial
+    b : float
+        Límite superior del intervalo inicial
+    tol : float, opcional
+        Tolerancia para el criterio de convergencia
+    max_iter : int, opcional
+        Número máximo de iteraciones
+        
+    Retorna:
     --------
     float
-        The approximate root of the function
+        La aproximación de la raíz encontrada
     int
-        Number of iterations performed
+        Número de iteraciones realizadas
+    list
+        Lista de aproximaciones intermedias
     """
-    # Check if f(a) and f(b) have opposite signs
+    # Verificar que f(a) y f(b) tengan signos opuestos
     if f(a) * f(b) >= 0:
-        raise ValueError("Function values at interval endpoints must have opposite signs")
+        raise ValueError("La función debe tener signos opuestos en los extremos del intervalo")
     
-    iter_count = 0
+    iteraciones = 0
+    aproximaciones = []
     
-    while (b - a) / 2 > tol and iter_count < max_iter:
-        c = (a + b) / 2  # Midpoint
-        fc = f(c)
+    while (b - a) > tol and iteraciones < max_iter:
+        c = (a + b) / 2  # Punto medio
+        aproximaciones.append(c)
         
-        if abs(fc) < tol:  # If we're close enough to zero
-            return c, iter_count
+        if f(c) == 0:
+            return c, iteraciones, aproximaciones  # Raíz exacta encontrada
         
-        if f(a) * fc < 0:  # Root is in [a, c]
-            b = c
-        else:  # Root is in [c, b]
-            a = c
+        if f(a) * f(c) < 0:
+            b = c  # La raíz está en [a, c]
+        else:
+            a = c  # La raíz está en [c, b]
             
-        iter_count += 1
+        iteraciones += 1
     
-    return (a + b) / 2, iter_count
+    raiz = (a + b) / 2  # Aproximación final
+    return raiz, iteraciones, aproximaciones
 
-# Example usage
+# Ejemplo de uso
 if __name__ == "__main__":
-    # Example function: f(x) = x^3 - x - 2
-    def f(x):
+    # Definir una función de ejemplo: f(x) = x^3 - x - 2
+    def funcion_ejemplo(x):
         return x**3 - x - 2
     
-    root, iterations = bisection(f, 1, 2)
-    print(f"Root found: {root}")
-    print(f"Function value at root: {f(root)}")
-    print(f"Iterations: {iterations}")
+    # Intervalo inicial [1, 2]
+    raiz, iteraciones, aproximaciones = bisection(funcion_ejemplo, 1, 2)
+    
+    print(f"Raíz aproximada: {raiz}")
+    print(f"Valor de la función en la raíz: {funcion_ejemplo(raiz)}")
+    print(f"Iteraciones realizadas: {iteraciones}")
+    print(f"Aproximaciones intermedias: {aproximaciones}")
