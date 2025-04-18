@@ -17,3 +17,4 @@ def divisiones_por_cero(expr_str):
     except Exception as e:
         return True, f"Error al analizar la expresión: {e}"
 
+#wasa
