@@ -991,11 +991,14 @@ Cada método posee características particulares que los hacen más adecuados pa
         
         self.status_bar.config(text=f"Raíz encontrada: {raiz:.8f}")
 
+
     def _graficar_funcion(self, f, raiz, pasos):
         """Grafica la función y la raíz encontrada"""
         try:
-            # Limpiar gráfico anterior
+            # Limpiar gráfico anterior completamente
             self.ax_raices.clear()
+            self.fig_raices.clf()  # Limpiar toda la figura
+            self.ax_raices = self.fig_raices.add_subplot(111)  # Recrear el eje principal
             
             # Definir rango para graficar
             margen = max(1.0, abs(raiz) * 0.5)
@@ -1027,20 +1030,29 @@ Cada método posee características particulares que los hacen más adecuados pa
                 ax2.plot(pasos_x, pasos_y, 'g-o', alpha=0.7, label='Convergencia')
                 ax2.set_ylabel('Valor de x')
                 ax2.tick_params(axis='y', labelcolor='g')
+                
+                # Añadir leyenda para el segundo eje
+                lines1, labels1 = self.ax_raices.get_legend_handles_labels()
+                lines2, labels2 = ax2.get_legend_handles_labels()
+                ax2.legend(lines1 + lines2, labels1 + labels2, loc='best')
+            else:
+                self.ax_raices.legend(loc='best')
             
             # Configurar gráfico
             self.ax_raices.set_xlabel('x')
             self.ax_raices.set_ylabel('f(x)')
             self.ax_raices.set_title('Gráfica de la función y su raíz')
             self.ax_raices.grid(True, alpha=0.3)
-            self.ax_raices.legend(loc='best')
             
             # Actualizar gráfico
             self.fig_raices.tight_layout()
             self.canvas_raices.draw()
+            self.canvas_raices.flush_events()  # Forzar actualización del canvas
             
         except Exception as e:
             print(f"Error al graficar: {e}")
+            # Mostrar el error en la interfaz para mejor depuración
+            messagebox.showerror("Error de gráfica", f"Error al graficar: {e}")
 
     def resolver_sistema(self):
         """Resuelve el sistema de ecuaciones según el método seleccionado"""
