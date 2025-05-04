@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Métodos Numéricos Funcional</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* --- CSS desde style.css --- */
+        body {
+            background-color: #0a0a1a; /* Azul muy oscuro casi negro */
+            color: #e0e0ff; /* Azul pálido / blanco */
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px; /* Un poco más ancho */
+            margin: auto;
+            background-color: #1a1a2e; /* Azul oscuro */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(48, 79, 254, 0.5); /* Sombra azul */
+        }
+
+        h1, h2, h3 {
+            color: #87CEFA; /* Azul claro */
+            border-bottom: 1px solid #304ffe; /* Línea azul */
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* --- Pestañas --- */
+        .tabs {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #304ffe;
+            display: flex; /* Para alinear botones */
+        }
+
+        .tab-button {
+            background-color: #1a1a2e;
+            color: #87CEFA;
+            border: none;
+            padding: 12px 22px; /* Un poco más grandes */
+            cursor: pointer;
+            font-size: 1.05em; /* Ligeramente más grande */
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            flex-grow: 1; /* Ocupar espacio equitativamente */
+            text-align: center;
+        }
+
+        .tab-button:hover {
+            background-color: #3f51b5; /* Indigo más suave */
+            color: white;
+        }
+
+        .tab-button.active {
+            background-color: #304ffe; /* Azul más brillante para activa */
+            color: white;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none; /* Ocultar por defecto */
+            padding: 25px;
+            border: 1px solid #304ffe;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            background-color: #202035; /* Un poco más claro que el fondo */
+        }
+
+        .tab-content.active {
+            display: block; /* Mostrar la activa */
+        }
+
+        /* --- Formularios --- */
+        .input-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Layout adaptable */
+            gap: 15px 20px; /* Espacio vertical y horizontal */
+        }
+
+        .input-form .form-group {
+           /* margin-bottom: 15px; Eliminado por gap */
+        }
+        /* Ocupar toda la fila para función y matriz */
+        .form-group.full-width {
+             grid-column: 1 / -1;
+        }
+
+
+        .input-form label {
+            display: block;
+            margin-bottom: 6px;
+            color: #add8e6; /* Azul claro */
+            font-weight: bold;
+        }
+
+        .input-form input[type="text"],
+        .input-form input[type="number"],
+        .input-form textarea,
+        .input-form select {
+            width: 100%; /* Usar ancho completo del contenedor grid */
+            padding: 10px;
+            background-color: #0a0a1a;
+            border: 1px solid #304ffe;
+            color: #e0e0ff;
+            border-radius: 4px;
+            font-size: 1em;
+            box-sizing: border-box; /* Incluir padding y borde en el ancho */
+        }
+
+        .input-form textarea {
+             resize: vertical;
+             min-height: 60px;
+        }
+         .input-form select {
+             padding: 10px; /* Asegurar padding consistente */
+        }
+
+        /* --- Botones --- */
+        .math-buttons {
+            margin-top: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px; /* Espacio entre botones */
+            grid-column: 1 / -1; /* Ocupar toda la fila en layout de grid */
+            border-top: 1px solid #304ffe;
+            padding-top: 15px;
+        }
+        .action-buttons {
+            margin-top: 25px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center; /* Centrar botones de acción */
+            grid-column: 1 / -1; /* Ocupar toda la fila */
+        }
+
+        .math-buttons button {
+             background-color: #4a4a70; /* Color más sutil */
+             color: #e0e0ff;
+             border: none;
+             padding: 5px 10px;
+             border-radius: 4px;
+             cursor: pointer;
+             font-size: 0.9em;
+             transition: background-color 0.3s;
+             min-width: 35px; /* Ancho mínimo */
+             text-align: center;
+        }
+         .action-buttons button {
+            background-color: #304ffe; /* Azul */
+            color: white;
+            border: none;
+            padding: 12px 20px; /* Botones más grandes */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        .math-buttons button:hover {
+             background-color: #6a6a90;
+        }
+        .action-buttons button:hover {
+            background-color: #1e3ae6; /* Azul más oscuro al pasar el ratón */
+        }
+         .action-buttons button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+
+        /* --- Resultados, Pasos, Teoría --- */
+        .results, .step-by-step, .theory {
+            margin-top: 25px;
+            background-color: #101020;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #304ffe;
+            grid-column: 1 / -1; /* Ocupar toda la fila */
+        }
+
+        .results pre { /* Para mantener formato en resultados */
+            white-space: pre-wrap; /* Ajustar líneas largas */
+            word-wrap: break-word;
+            color: #c0d0ff;
+            font-family: monospace;
+            font-size: 1.1em; /* Un poco más grande para legibilidad */
+            line-height: 1.5;
+        }
+
+        /* --- Gráfica --- */
+        .graph-container {
+            margin-top: 25px;
+            text-align: center;
+            grid-column: 1 / -1; /* Ocupar toda la fila */
+        }
+
+        #grafica-raices {
+            background-color: #f0f0f8; /* Fondo claro para la gráfica */
+            border: 1px solid #304ffe;
+            border-radius: 4px;
+            max-width: 100%;
+            height: 350px; /* Altura fija más grande */
+        }
+
+        /* --- Utilidades --- */
+        .hidden {
+            display: none;
+        }
+
+        /* Estilo para tablas en paso a paso */
+        .step-by-step table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            color: #e0e0ff;
+            font-size: 0.95em; /* Ajustar tamaño de fuente */
+        }
+        .step-by-step th, .step-by-step td {
+            border: 1px solid #304ffe;
+            padding: 8px 10px; /* Más padding horizontal */
+            text-align: right; /* Alinear números a la derecha */
+        }
+        .step-by-step th {
+            background-color: #304ffe;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+        }
+        .step-by-step td {
+             font-family: monospace;
+             word-break: break-all; /* Para matrices largas */
+        }
+        .step-by-step td.matrix-cell { /* Estilo especial para celdas de matriz */
+             padding: 5px;
+             font-size: 0.9em;
+             text-align: center;
+        }
+        .step-by-step pre { /* Para mostrar matrices/vectores en paso a paso */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #c0d0ff;
+            font-family: monospace;
+            text-align: left;
+            margin: 0;
+            padding: 5px;
+            background-color: #2a2a40; /* Fondo ligero para pre */
+            border-radius: 3px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora Métodos Numéricos</h1>
+
+        <nav class="tabs">
+            <button class="tab-button active" onclick="showTab('raices')">Raíces</button>
+            <button class="tab-button" onclick="showTab('sistemas')">Sistemas</button>
+        </nav>
+
+        <div id="raices" class="tab-content active">
+            <h2>Métodos de Búsqueda de Raíces</h2>
+
+            <div class="input-form">
+                 <div class="form-group full-width">
+                     <label for="root-method">Selecciona el método:</label>
+                     <select id="root-method" onchange="updateRootForm()">
+                         <option value="biseccion">Bisección</option>
+                         <option value="regula-falsi">Regula Falsi</option>
+                         <option value="newton">Newton-Raphson</option>
+                         <option value="secante">Secante</option>
+                     </select>
+                 </div>
+
+                <div class="form-group full-width">
+                    <label for="funcion">Función f(x):</label>
+                    <input type="text" id="funcion" placeholder="Ej: x^3 - x - 2">
+                </div>
+                <div class="form-group full-width" id="derivada-group" style="display: none;"> <label for="derivada">Derivada f'(x):</label>
+                    <input type="text" id="derivada" placeholder="Ej: 3*x^2 - 1">
+                </div>
+                 <div class="form-group interval-group">
+                    <label for="intervalo-a">Intervalo [a] o Valor Inicial x0:</label>
+                    <input type="text" id="intervalo-a" placeholder="Ej: 1">
+                 </div>
+                 <div class="form-group interval-group">
+                     <label for="intervalo-b">Intervalo [b] o Valor Inicial x1:</label>
+                    <input type="text" id="intervalo-b" placeholder="Ej: 2">
+                 </div>
+                 <div class="form-group">
+                    <label for="tolerancia-raiz">Tolerancia:</label>
+                    <input type="text" id="tolerancia-raiz" value="1e-7" placeholder="Ej: 1e-7">
+                 </div>
+                 <div class="form-group">
+                    <label for="max-iter-raiz">Máx. Iteraciones:</label>
+                    <input type="number" id="max-iter-raiz" value="100" placeholder="100">
+                 </div>
+
+                 <div class="math-buttons">
+                    <button onclick="insertMathSymbol('^')">^</button>
+                    <button onclick="insertMathSymbol('sqrt()')">√</button>
+                    <button onclick="insertMathSymbol('sin()')">sin</button>
+                    <button onclick="insertMathSymbol('cos()')">cos</button>
+                    <button onclick="insertMathSymbol('tan()')">tan</button>
+                    <button onclick="insertMathSymbol('log()')">log</button> <button onclick="insertMathSymbol('log( , 2)')">log₂</button> <button onclick="insertMathSymbol('ln()')">ln</button> <button onclick="insertMathSymbol('exp()')">exp</button>
+                    <button onclick="insertMathSymbol('abs()')">abs</button>
+                    <button onclick="insertMathSymbol('*')">*</button>
+                    <button onclick="insertMathSymbol('/')">/</button>
+                    <button onclick="insertMathSymbol('+')">+</button>
+                    <button onclick="insertMathSymbol('-')">-</button>
+                    <button onclick="insertMathSymbol('(')">(</button>
+                    <button onclick="insertMathSymbol(')')">)</button>
+                    <button onclick="insertMathSymbol('pi')">π</button>
+                    <button onclick="insertMathSymbol('e')">e</button>
+                    <button onclick="insertMathSymbol('x')">x</button>
+                 </div>
+
+                 <div class="action-buttons">
+                    <button id="solve-root-btn" onclick="resolverRaiz()">Resolver</button>
+                    <button id="step-root-btn" onclick="mostrarPasoAPasoRaiz()" disabled>Paso a paso</button>
+                    <button id="export-img-btn" onclick="exportarImagen('grafica-raices')" disabled>Exportar Imagen</button>
+                    <button id="export-gif-btn" onclick="exportarGifRaiz()" disabled>Exportar GIF</button>
+                    <button onclick="mostrarTeoria('root')">Teoría</button>
+                 </div>
+
+                 <div class="results" id="resultados-raiz">
+                    <h3>Resultados:</h3>
+                    <pre id="output-raiz">Esperando entrada...</pre>
+                 </div>
+
+                <div class="graph-container">
+                    <h3>Gráfica:</h3>
+                    <canvas id="grafica-raices" width="400" height="350"></canvas>
+                </div>
+
+
+                 <div class="step-by-step" id="paso-a-paso-raiz" style="display: none;">
+                    <h3>Paso a Paso:</h3>
+                    <div id="pasos-raiz-content"></div>
+                 </div>
+
+                 <div class="theory" id="teoria-raiz" style="display: none;">
+                    <h3>Teoría:</h3>
+                    <p id="teoria-raiz-content"></p>
+                 </div>
+            </div></div><div id="sistemas" class="tab-content">
+            <h2>Métodos de Sistemas de Ecuaciones Lineales</h2>
+             <div class="input-form">
+                 <div class="form-group full-width">
+                     <label for="system-method">Selecciona el método:</label>
+                     <select id="system-method" onchange="updateSystemForm()">
+                         <option value="gauss-jordan">Gauss-Jordan</option>
+                         <option value="jacobi">Jacobi</option>
+                         <option value="gauss-seidel">Gauss-Seidel</option>
+                     </select>
+                 </div>
+
+                 <div class="form-group full-width">
+                     <label for="matriz-a">Matriz A (formato JSON: [[1,2],[3,4]]):</label>
+                     <textarea id="matriz-a" rows="4" placeholder="[[4, 1, -1], [2, 5, 2], [1, 2, 4]]"></textarea>
+                 </div>
+                  <div class="form-group full-width">
+                     <label for="vector-b">Vector b (formato JSON: [1,2]):</label>
+                     <input type="text" id="vector-b" placeholder="[3, 3, 11]">
+                  </div>
+                 <div class="form-group iterative-group" style="display: none;"> <label for="vector-inicial">Vector Inicial (formato JSON: [0,0]):</label>
+                    <input type="text" id="vector-inicial" placeholder="[0, 0, 0]">
+                 </div>
+                 <div class="form-group iterative-group" style="display: none;">
+                    <label for="tolerancia-sistema">Tolerancia:</label>
+                    <input type="text" id="tolerancia-sistema" value="1e-7" placeholder="Ej: 1e-7">
+                 </div>
+                  <div class="form-group iterative-group" style="display: none;">
+                    <label for="max-iter-sistema">Máx. Iteraciones:</label>
+                    <input type="number" id="max-iter-sistema" value="100" placeholder="100">
+                 </div>
+
+                <div class="action-buttons">
+                    <button id="solve-system-btn" onclick="resolverSistema()">Resolver</button>
+                    <button id="step-system-btn" onclick="mostrarPasoAPasoSistema()" disabled>Paso a paso</button>
+                    <button onclick="mostrarTeoria('system')">Teoría</button>
+                </div>
+
+                <div class="results" id="resultados-sistema">
+                     <h3>Resultados:</h3>
+                     <pre id="output-sistema">Esperando entrada...</pre>
+                 </div>
+
+                 <div class="step-by-step" id="paso-a-paso-sistema" style="display: none;">
+                     <h3>Paso a Paso:</h3>
+                     <div id="pasos-sistema-content"></div>
+                 </div>
+
+                 <div class="theory" id="teoria-sistema" style="display: none;">
+                     <h3>Teoría:</h3>
+                     <p id="teoria-sistema-content"></p>
+                </div>
+
+            </div> </div> </div> <script>
+        // --- JavaScript Funcional (Incluye Algoritmos) ---
+
+        // Variables globales para Chart.js y datos de pasos
+        let currentChart = null;
+        let rootStepsData = [];
+        let systemStepsData = [];
+
+        // --- Manejo de Pestañas ---
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+            if (tabId === 'raices') updateRootForm();
+            else if (tabId === 'sistemas') updateSystemForm();
+        }
+
+        // --- Actualización de Formularios ---
+        function updateRootForm() {
+            const method = document.getElementById('root-method').value;
+            const derivadaGroup = document.getElementById('derivada-group');
+            const intervaloGroupB = document.querySelectorAll('.interval-group')[1];
+            const labelA = document.querySelector('label[for="intervalo-a"]');
+            const labelB = document.querySelector('label[for="intervalo-b"]');
+
+            derivadaGroup.style.display = (method === 'newton') ? 'block' : 'none';
+            intervaloGroupB.style.display = (method === 'newton') ? 'none' : 'block';
+
+            if (method === 'biseccion' || method === 'regula-falsi') {
+                labelA.textContent = 'Intervalo [a]:';
+                labelB.textContent = 'Intervalo [b]:';
+            } else if (method === 'newton') {
+                labelA.textContent = 'Valor Inicial x0:';
+            } else if (method === 'secante') {
+                labelA.textContent = 'Valor Inicial x0:';
+                labelB.textContent = 'Valor Inicial x1:';
+            }
+            clearResults('raiz'); // Limpiar al cambiar método
+        }
+
+        function updateSystemForm() {
+            const method = document.getElementById('system-method').value;
+            const displayStyle = (method === 'jacobi' || method === 'gauss-seidel') ? 'block' : 'none';
+            document.querySelectorAll('.iterative-group').forEach(group => group.style.display = displayStyle);
+            clearResults('sistema'); // Limpiar al cambiar método
+        }
+
+
+        // --- Lógica Principal (Llamadas a funciones de métodos) ---
+        function resolverRaiz() {
+            const solveBtn = document.getElementById('solve-root-btn');
+            const stepBtn = document.getElementById('step-root-btn');
+            const exportImgBtn = document.getElementById('export-img-btn');
+            const exportGifBtn = document.getElementById('export-gif-btn'); // GIF sigue deshabilitado
+
+            // Deshabilitar botones mientras se calcula
+            solveBtn.disabled = true;
+            stepBtn.disabled = true;
+            exportImgBtn.disabled = true;
+            // exportGifBtn.disabled = true;
+            solveBtn.textContent = 'Calculando...';
+
+            // Usar setTimeout para permitir que la UI se actualice antes del cálculo pesado
+            setTimeout(() => {
+                clearResults('raiz');
+                const method = document.getElementById('root-method').value;
+                const funcionStr = document.getElementById('funcion').value;
+                const tolText = document.getElementById('tolerancia-raiz').value;
+                const maxIterText = document.getElementById('max-iter-raiz').value;
+                const aText = document.getElementById('intervalo-a').value;
+                const bText = document.getElementById('intervalo-b').value;
+                const derivadaStr = document.getElementById('derivada').value;
+                const outputArea = document.getElementById('output-raiz');
+
+                try {
+                    // Validaciones iniciales
+                    if (!funcionStr) throw new Error("Debes ingresar una función f(x).");
+                    const tol = parseFloat(tolText);
+                    const maxIter = parseInt(maxIterText);
+                    if (isNaN(tol) || tol <= 0) throw new Error("La tolerancia debe ser un número positivo.");
+                    if (isNaN(maxIter) || maxIter <= 0) throw new Error("Máx. Iteraciones debe ser un entero positivo.");
+
+                    // Parseo de funciones
+                    if (typeof math === 'undefined') throw new Error("Librería Math.js no cargada.");
+                    const node = math.parse(funcionStr);
+                    const func = x => node.evaluate({ x: x });
+                    func(1); // Test eval
+
+                    let funcPrime = null;
+                    if (method === 'newton') {
+                        if (!derivadaStr) throw new Error("Newton requiere la derivada f'(x).");
+                        const nodePrime = math.parse(derivadaStr);
+                        funcPrime = x => nodePrime.evaluate({ x: x });
+                        funcPrime(1); // Test eval
+                    }
+
+                    // Parseo de valores iniciales/intervalo
+                    const a = parseFloat(aText);
+                    let b = NaN;
+                    if (method !== 'newton') b = parseFloat(bText);
+
+                    // Selección y ejecución del método
+                    let resultado;
+                    switch (method) {
+                        case 'biseccion':
+                            if (isNaN(a) || isNaN(b)) throw new Error("Bisección requiere intervalo numérico [a, b].");
+                            resultado = biseccion(func, a, b, tol, maxIter);
+                            break;
+                        case 'regula-falsi':
+                            if (isNaN(a) || isNaN(b)) throw new Error("Regula Falsi requiere intervalo numérico [a, b].");
+                            resultado = regulaFalsi(func, a, b, tol, maxIter);
+                            break;
+                        case 'newton':
+                            if (isNaN(a)) throw new Error("Newton requiere un valor inicial x0 numérico.");
+                            resultado = newton(func, funcPrime, a, tol, maxIter);
+                            break;
+                        case 'secante':
+                            if (isNaN(a) || isNaN(b)) throw new Error("Secante requiere valores iniciales x0, x1 numéricos.");
+                            resultado = secante(func, a, b, tol, maxIter);
+                            break;
+                        default: throw new Error("Método no reconocido.");
+                    }
+
+                    // Mostrar resultados
+                    rootStepsData = resultado.pasos || []; // Guardar pasos
+                    let outputString = `Método: ${method}\n`;
+                    outputString += `Raíz aproximada: ${formatNumber(resultado.raiz, 10)}\n`;
+                    outputString += `Iteraciones: ${resultado.iteraciones}\n`;
+                    if (resultado.error !== null) outputString += `Error estimado: ${formatNumber(resultado.error, 10)}\n`;
+                    if (resultado.message) outputString += `Mensaje: ${resultado.message}\n`;
+                    outputArea.textContent = outputString;
+
+                    // Habilitar botones de post-procesamiento
+                    stepBtn.disabled = false;
+                    exportImgBtn.disabled = false;
+                    // exportGifBtn.disabled = false; // Mantener deshabilitado por ahora
+
+                    // Graficar
+                    let plotInterval = resultado.intervalo || (isNaN(b) ? [a-1, a+1] : [a, b]);
+                     if (method === 'newton' || method === 'secante') {
+                         const range = Math.max(1, Math.abs(resultado.raiz * 0.5));
+                         plotInterval = [resultado.raiz - range, resultado.raiz + range];
+                     }
+                    graficarFuncion(func, plotInterval, resultado.raiz);
+
+                } catch (error) {
+                    outputArea.textContent = `Error: ${error.message}`;
+                    console.error(error);
+                    clearGraph(); // Limpiar gráfico si hubo error
+                } finally {
+                    // Rehabilitar botón de resolver
+                    solveBtn.disabled = false;
+                    solveBtn.textContent = 'Resolver';
+                }
+            }, 50); // 50ms de espera
+        }
+
+        function resolverSistema() {
+             const solveBtn = document.getElementById('solve-system-btn');
+             const stepBtn = document.getElementById('step-system-btn');
+
+             solveBtn.disabled = true;
+             stepBtn.disabled = true;
+             solveBtn.textContent = 'Calculando...';
+
+             setTimeout(() => {
+                clearResults('sistema');
+                const method = document.getElementById('system-method').value;
+                const matrizA_str = document.getElementById('matriz-a').value;
+                const vectorB_str = document.getElementById('vector-b').value;
+                const vectorInicial_str = document.getElementById('vector-inicial').value;
+                const tolText = document.getElementById('tolerancia-sistema').value;
+                const maxIterText = document.getElementById('max-iter-sistema').value;
+                const outputArea = document.getElementById('output-sistema');
+
+                try {
+                    if (!matrizA_str || !vectorB_str) throw new Error("Ingresa la Matriz A y el Vector b en formato JSON.");
+
+                    // Parseo y validación
+                    let A, b, x0 = null, tol = NaN, maxIter = NaN;
+                    try {
+                        A = JSON.parse(matrizA_str);
+                        b = JSON.parse(vectorB_str);
+                        if (!Array.isArray(A) || !Array.isArray(b) || A.length === 0 || !Array.isArray(A[0])) throw new Error("Formato JSON inválido para A o b.");
+                        if (A.length !== b.length) throw new Error("Dimensiones incompatibles (filas de A != tamaño de b).");
+                        if (!A.every(row => Array.isArray(row) && row.length === A.length)) throw new Error("La Matriz A debe ser cuadrada.");
+
+                         if (method === 'jacobi' || method === 'gauss-seidel') {
+                            if (!vectorInicial_str) throw new Error("Métodos iterativos requieren vector inicial.");
+                            x0 = JSON.parse(vectorInicial_str);
+                            if (!Array.isArray(x0) || x0.length !== A.length) throw new Error("Vector inicial con dimensiones incorrectas.");
+                            tol = parseFloat(tolText);
+                            maxIter = parseInt(maxIterText);
+                            if (isNaN(tol) || tol <= 0) throw new Error("Tolerancia inválida.");
+                            if (isNaN(maxIter) || maxIter <= 0) throw new Error("Máx. Iteraciones inválido.");
+                         }
+                    } catch (e) { throw new Error(`Error parseando JSON o formato incorrecto: ${e.message}`); }
+
+                    // Clonar A y b para no modificar originales en Gauss-Jordan
+                    const A_clone = JSON.parse(JSON.stringify(A));
+                    const b_clone = JSON.parse(JSON.stringify(b));
+
+                    // Selección y ejecución
+                    let resultado;
+                    switch (method) {
+                        case 'gauss-jordan':
+                            resultado = gaussJordan(A_clone, b_clone);
+                            break;
+                        case 'jacobi':
+                            resultado = jacobi(A, b, x0, tol, maxIter);
+                            break;
+                        case 'gauss-seidel':
+                            resultado = gaussSeidel(A, b, x0, tol, maxIter);
+                            break;
+                        default: throw new Error("Método no reconocido.");
+                    }
+
+                    // Mostrar resultados
+                    systemStepsData = resultado.pasos || []; // Guardar pasos
+                    let outputString = `Método: ${method}\n`;
+                    if (resultado.solucion) outputString += `Solución (x):\n${JSON.stringify(resultado.solucion.map(x => formatNumber(x, 8)), null, 2)}\n`;
+                    if (resultado.iteraciones !== undefined) outputString += `Iteraciones: ${resultado.iteraciones}\n`;
+                    if (resultado.error !== undefined && resultado.error !== null) outputString += `Error final: ${formatNumber(resultado.error, 8)}\n`;
+                    if (resultado.message) outputString += `Mensaje: ${resultado.message}\n`;
+                    outputArea.textContent = outputString;
+
+                    stepBtn.disabled = systemStepsData.length === 0; // Habilitar si hay pasos
+
+                } catch (error) {
+                    outputArea.textContent = `Error: ${error.message}`;
+                    console.error(error);
+                } finally {
+                    solveBtn.disabled = false;
+                    solveBtn.textContent = 'Resolver';
+                }
+             }, 50);
+        }
+
+
+        // --- Implementaciones de Métodos Numéricos ---
+
+        function biseccion(func, a, b, tol, maxIter) {
+             let fa = func(a);
+             let fb = func(b);
+             if (fa * fb >= 0) throw new Error("f(a) y f(b) deben tener signos opuestos.");
+
+             let iter = 0;
+             let c = a;
+             let fc = fa;
+             let error = Math.abs(b - a);
+             let pasos = [{ iter: 0, a: a, b: b, fa: fa, fb: fb, error: error }];
+
+             while (error / 2 > tol && iter < maxIter) {
+                 iter++;
+                 c = (a + b) / 2;
+                 fc = func(c);
+                 error = Math.abs(b - a); // Error antes de actualizar intervalo
+                 pasos.push({ iter: iter, a: a, b: b, c: c, fa: fa, fb: fb, fc: fc, error: error / 2 });
+
+                 if (fc === 0) break; // Raíz exacta
+                 if (fa * fc < 0) {
+                     b = c;
+                     fb = fc;
+                 } else {
+                     a = c;
+                     fa = fc;
+                 }
+                 // Actualizar error para la condición del while
+                 error = Math.abs(b - a);
+             }
+             c = (a + b) / 2; // Mejor aproximación final
+             let message = iter === maxIter ? "Máximo de iteraciones alcanzado." : "Convergencia alcanzada.";
+             return { raiz: c, iteraciones: iter, error: error / 2, intervalo: [a, b], pasos: pasos, message: message };
+        }
+
+        function regulaFalsi(func, a, b, tol, maxIter) {
+            let fa = func(a);
+            let fb = func(b);
+            if (fa * fb >= 0) throw new Error("f(a) y f(b) deben tener signos opuestos.");
+
+            let iter = 0;
+            let c = a;
+            let fc = fa;
+            let error = tol + 1; // Iniciar error > tol
+            let c_prev = b; // Para calcular error relativo
+            let pasos = [{ iter: 0, a: a, b: b, fa: fa, fb: fb, error: null }];
+            let stagnation_count = 0; // Contador para posible estancamiento
+            const STAGNATION_LIMIT = 10; // Límite para detectar estancamiento
+
+            while (error > tol && iter < maxIter) {
+                iter++;
+                // Evitar división por cero si fa y fb son muy cercanos
+                if (Math.abs(fb - fa) < Number.EPSILON) {
+                    c = (a+b)/2; // Usar bisección si hay riesgo de división por cero
+                } else {
+                   c = b - fb * (b - a) / (fb - fa);
+                }
+                fc = func(c);
+                // Calcular error absoluto |c - c_prev| o relativo |(c - c_prev) / c|
+                error = Math.abs(c - c_prev);
+                // error = (Math.abs(c)>Number.EPSILON) ? Math.abs((c - c_prev) / c) : Math.abs(c - c_prev);
+
+                 pasos.push({ iter: iter, a: a, b: b, c: c, fa: fa, fb: fb, fc: fc, error: error });
+
+                if (fc === 0) break; // Raíz exacta
+
+                let prev_a = a;
+                let prev_b = b;
+
+                if (fa * fc < 0) {
+                    b = c;
+                    fb = fc;
+                    // Detectar estancamiento de 'a'
+                    if (Math.abs(a - prev_a) < Number.EPSILON) stagnation_count++;
+                    else stagnation_count = 0;
+                } else {
+                    a = c;
+                    fa = fc;
+                     // Detectar estancamiento de 'b'
+                     if (Math.abs(b - prev_b) < Number.EPSILON) stagnation_count++;
+                     else stagnation_count = 0;
+                }
+                c_prev = c;
+
+                // Modificación para evitar estancamiento (si un extremo no se mueve)
+                 if (stagnation_count > STAGNATION_LIMIT) {
+                    console.warn("Regula Falsi: posible estancamiento detectado, aplicando modificación.");
+                    if (Math.abs(a - prev_a) < Number.EPSILON) { // Si 'a' se estancó
+                         fa = fa / 2; // Reducir f(a) artificialmente
+                    } else if (Math.abs(b - prev_b) < Number.EPSILON) { // Si 'b' se estancó
+                        fb = fb / 2; // Reducir f(b) artificialmente
+                    }
+                    stagnation_count = 0; // Reiniciar contador
+                 }
+            }
+            let message = iter === maxIter ? "Máximo de iteraciones alcanzado." : "Convergencia alcanzada.";
+             if (error > tol && iter === maxIter) message += " (Puede no haber convergido)";
+            return { raiz: c, iteraciones: iter, error: error, intervalo: [a, b], pasos: pasos, message: message };
+        }
+
+        function newton(func, funcPrime, x0, tol, maxIter) {
+             let x_n = x0;
+             let iter = 0;
+             let error = tol + 1; // Iniciar error > tol
+             let pasos = [{ iter: 0, xn: x_n, fxn: func(x_n), fpxn: funcPrime(x_n), error: null }];
+
+             while (error > tol && iter < maxIter) {
+                 iter++;
+                 let fxn = func(x_n);
+                 let fpxn = funcPrime(x_n);
+
+                 if (Math.abs(fpxn) < Number.EPSILON) {
+                     throw new Error(`Derivada cercana a cero en x=${x_n} (iteración ${iter}).`);
+                 }
+
+                 let x_n1 = x_n - fxn / fpxn;
+                 error = Math.abs(x_n1 - x_n);
+                 // error = (Math.abs(x_n1) > Number.EPSILON) ? Math.abs((x_n1 - x_n) / x_n1) : Math.abs(x_n1 - x_n); // Error relativo
+
+                 pasos.push({ iter: iter, xn: x_n1, fxn: func(x_n1), fpxn: (iter < maxIter ? funcPrime(x_n1):null), error: error }); // Calcular f' solo si no es la última iter
+                 x_n = x_n1;
+             }
+             let message = iter === maxIter ? "Máximo de iteraciones alcanzado." : "Convergencia alcanzada.";
+             if (error > tol && iter === maxIter) message += " (Puede no haber convergido)";
+             return { raiz: x_n, iteraciones: iter, error: error, pasos: pasos, message: message };
+        }
+
+        function secante(func, x0, x1, tol, maxIter) {
+             let x_prev = x0;
+             let x_curr = x1;
+             let f_prev = func(x_prev);
+             let f_curr = func(x_curr);
+             let iter = 0;
+             let error = tol + 1;
+             let pasos = [
+                 { iter: 0, x_prev: x_prev, x_curr: x_curr, f_prev: f_prev, f_curr: f_curr, error: null }
+             ];
+
+             while (error > tol && iter < maxIter) {
+                 iter++;
+                 if (Math.abs(f_curr - f_prev) < Number.EPSILON) {
+                     throw new Error(`Diferencia f(xn)-f(xn-1) cercana a cero (iteración ${iter}). Posible raíz múltiple o intervalo inadecuado.`);
+                 }
+
+                 let x_next = x_curr - f_curr * (x_curr - x_prev) / (f_curr - f_prev);
+                 error = Math.abs(x_next - x_curr);
+                  // error = (Math.abs(x_next) > Number.EPSILON) ? Math.abs((x_next - x_curr) / x_next) : Math.abs(x_next - x_curr); // Error relativo
+
+                 pasos.push({ iter: iter, x_prev: x_curr, x_curr: x_next, f_prev: f_curr, f_curr: func(x_next), error: error });
+
+                 x_prev = x_curr;
+                 f_prev = f_curr;
+                 x_curr = x_next;
+                 f_curr = func(x_curr); // Evaluar para la siguiente iteración
+             }
+             let message = iter === maxIter ? "Máximo de iteraciones alcanzado." : "Convergencia alcanzada.";
+             if (error > tol && iter === maxIter) message += " (Puede no haber convergido)";
+             return { raiz: x_curr, iteraciones: iter, error: error, pasos: pasos, message: message };
+        }
+
+         // --- Métodos de Sistemas Lineales ---
+
+         // Helper: Copia profunda de una matriz
+        function cloneMatrix(matrix) {
+            return matrix.map(row => Array.isArray(row) ? cloneMatrix(row) : row);
+        }
+        // Helper: Norma infinito de un vector
+        function vectorNormInf(vec) {
+            return Math.max(...vec.map(Math.abs));
+        }
+        // Helper: Resta de vectores
+        function subtractVectors(vecA, vecB) {
+            return vecA.map((val, i) => val - vecB[i]);
+        }
+         // Helper: Chequeo de diagonal dominante
+         function isDiagonallyDominant(A) {
+             for (let i = 0; i < A.length; i++) {
+                 let diag = Math.abs(A[i][i]);
+                 let sum_off_diag = 0;
+                 for (let j = 0; j < A.length; j++) {
+                     if (i !== j) {
+                         sum_off_diag += Math.abs(A[i][j]);
+                     }
+                 }
+                 if (diag <= sum_off_diag) return false; // Condición estricta <= para no ser dominante
+             }
+             return true;
+         }
+
+
+        function gaussJordan(A, b) {
+            const m = A.length;
+            const n = A[0].length;
+            if (m !== n) throw new Error("Gauss-Jordan requiere matriz cuadrada.");
+
+            // Crear matriz aumentada [A|b]
+            const augMatrix = A.map((row, i) => [...row, b[i]]);
+            let pasos = [{ step: 0, matrix: cloneMatrix(augMatrix), description: "Matriz aumentada inicial" }];
+
+            // Eliminación hacia adelante y atrás
+            for (let k = 0; k < m; k++) {
+                // Buscar pivote no nulo en columna k a partir de fila k
+                let pivotRow = k;
+                while (pivotRow < m && Math.abs(augMatrix[pivotRow][k]) < Number.EPSILON) {
+                    pivotRow++;
+                }
+
+                if (pivotRow === m) { // No se encontró pivote no nulo
+                    // Verificar si el resto de la columna k también es cero
+                    let allZero = true;
+                    for(let r=k; r<m; r++) {
+                        if(Math.abs(augMatrix[r][k]) >= Number.EPSILON) {
+                           allZero = false;
+                           break;
+                        }
+                    }
+                    // Si toda la columna bajo la diagonal es cero, pero el pivote era cero,
+                    // puede haber infinitas soluciones o ninguna. No se puede convertir a Identidad.
+                    // Continuamos con la siguiente columna si es posible, pero marcamos el problema.
+                     if (allZero) {
+                         console.warn(`Gauss-Jordan: Columna ${k} no tiene pivote no nulo. El sistema puede no tener solución única.`);
+                         pasos.push({ step: pasos.length, matrix: cloneMatrix(augMatrix), description: `Advertencia: No hay pivote en columna ${k}. Sistema singular.` });
+                         continue; // Saltar a la siguiente columna
+                     } else {
+                         // Si encontramos un no-cero más abajo, debería haberse intercambiado antes.
+                         // Esto indica un problema, pero por robustez, intentamos continuar.
+                         throw new Error(`Error en pivoteo columna ${k}. Sistema podría ser inconsistente.`);
+                     }
+                }
+
+
+                // Intercambiar fila k con fila del pivote si es necesario
+                if (pivotRow !== k) {
+                    [augMatrix[k], augMatrix[pivotRow]] = [augMatrix[pivotRow], augMatrix[k]];
+                     pasos.push({ step: pasos.length, matrix: cloneMatrix(augMatrix), description: `Intercambiar fila ${k+1} y ${pivotRow+1}` });
+                }
+
+                // Normalizar fila del pivote (hacer A[k][k] = 1)
+                let pivotVal = augMatrix[k][k];
+                if (Math.abs(pivotVal) < Number.EPSILON) {
+                   // Esto no debería pasar si el pivoteo funcionó, pero como chequeo de seguridad
+                   console.warn(`Gauss-Jordan: Pivote en (${k},${k}) es cero después del intercambio. Sistema singular.`);
+                   continue;
+                }
+
+                for (let j = k; j < n + 1; j++) {
+                    augMatrix[k][j] /= pivotVal;
+                }
+                 pasos.push({ step: pasos.length, matrix: cloneMatrix(augMatrix), description: `Normalizar fila ${k+1} (dividir por ${formatNumber(pivotVal)})` });
+
+
+                // Eliminar otros elementos en la columna k (hacerlos cero)
+                for (let i = 0; i < m; i++) {
+                    if (i !== k) {
+                        let factor = augMatrix[i][k];
+                        if (Math.abs(factor) > Number.EPSILON) { // Solo operar si no es ya cero
+                            for (let j = k; j < n + 1; j++) {
+                                augMatrix[i][j] -= factor * augMatrix[k][j];
+                                // Poner explícitamente cero si es muy pequeño para evitar errores de redondeo
+                                if (j===k && Math.abs(augMatrix[i][j]) < Number.EPSILON * 10) augMatrix[i][j]=0;
+                            }
+                           pasos.push({ step: pasos.length, matrix: cloneMatrix(augMatrix), description: `Eliminar elemento (${i+1},${k+1}) (Fila ${i+1} = Fila ${i+1} - (${formatNumber(factor)}) * Fila ${k+1})` });
+                        }
+                    }
+                }
+            }
+
+            // Extraer solución del lado derecho de la matriz aumentada
+            const solucion = augMatrix.map(row => row[n]);
+
+            // Chequeo final de consistencia (ej: fila [0 0 ... 0 | c] con c != 0)
+            for(let i=0; i<m; i++){
+                 let rowSum = 0;
+                 for(let j=0; j<n; j++){
+                     rowSum += Math.abs(augMatrix[i][j]);
+                 }
+                 if(rowSum < Number.EPSILON && Math.abs(augMatrix[i][n]) > Number.EPSILON){
+                     throw new Error(`Sistema inconsistente detectado en la fila ${i+1} ([0 ... 0 | non-zero])`);
+                 }
+            }
+
+
+            return { solucion: solucion, pasos: pasos, message: "Solución encontrada por Gauss-Jordan." };
+        }
+
+        function jacobi(A, b, x0, tol, maxIter) {
+             const n = A.length;
+             let x_k = [...x0]; // Copia del vector inicial
+             let x_k1 = new Array(n).fill(0);
+             let iter = 0;
+             let error = tol + 1;
+             let pasos = [{ iter: 0, x: [...x_k], error: null }];
+             let message = "";
+
+             if (!isDiagonallyDominant(A)) {
+                 message = "Advertencia: La matriz NO es estrictamente diagonal dominante. Jacobi podría no converger. ";
+                 console.warn(message);
+             }
+
+             while (error > tol && iter < maxIter) {
+                 iter++;
+                 for (let i = 0; i < n; i++) {
+                     let sum_off_diag = 0;
+                     for (let j = 0; j < n; j++) {
+                         if (i !== j) {
+                             sum_off_diag += A[i][j] * x_k[j];
+                         }
+                     }
+                     if (Math.abs(A[i][i]) < Number.EPSILON) throw new Error(`Elemento diagonal A[${i}][${i}] es cero.`);
+                     x_k1[i] = (b[i] - sum_off_diag) / A[i][i];
+                 }
+
+                 error = vectorNormInf(subtractVectors(x_k1, x_k));
+                 x_k = [...x_k1]; // Actualizar para la siguiente iteración
+                 pasos.push({ iter: iter, x: [...x_k], error: error });
+             }
+
+             if (iter === maxIter && error > tol) message += "Máximo de iteraciones alcanzado (puede no haber convergido).";
+             else if (error <= tol) message += "Convergencia alcanzada.";
+
+             return { solucion: x_k, iteraciones: iter, error: error, pasos: pasos, message: message };
+        }
+
+        function gaussSeidel(A, b, x0, tol, maxIter) {
+             const n = A.length;
+             let x_k = [...x0]; // Usaremos este vector para actualizar in-place los nuevos valores
+             let x_prev_iter = [...x0]; // Para calcular el error
+             let iter = 0;
+             let error = tol + 1;
+             let pasos = [{ iter: 0, x: [...x_k], error: null }];
+             let message = "";
+
+            // Convergencia asegurada si es diagonal dominante o simétrica definida positiva
+            // Añadimos chequeo de diagonal dominante como advertencia
+            if (!isDiagonallyDominant(A)) {
+                 message = "Advertencia: La matriz NO es estrictamente diagonal dominante. Gauss-Seidel podría no converger. ";
+                 console.warn(message);
+             }
+
+             while (error > tol && iter < maxIter) {
+                 iter++;
+                 x_prev_iter = [...x_k]; // Guardar estado anterior para calcular error
+
+                 for (let i = 0; i < n; i++) {
+                     let sum_j_lt_i = 0; // Suma usando valores actualizados de x_k en esta iteración
+                     for (let j = 0; j < i; j++) {
+                         sum_j_lt_i += A[i][j] * x_k[j];
+                     }
+                     let sum_j_gt_i = 0; // Suma usando valores de x_k de la iteración anterior
+                     for (let j = i + 1; j < n; j++) {
+                         sum_j_gt_i += A[i][j] * x_prev_iter[j]; // Usa x_k de la iter anterior (guardado en x_prev_iter)
+                     }
+
+                     if (Math.abs(A[i][i]) < Number.EPSILON) throw new Error(`Elemento diagonal A[${i}][${i}] es cero.`);
+
+                     // Actualizar x_k[i] directamente para que se use en la siguiente fila (j < i)
+                     x_k[i] = (b[i] - sum_j_lt_i - sum_j_gt_i) / A[i][i];
+                 }
+
+                 error = vectorNormInf(subtractVectors(x_k, x_prev_iter));
+                 pasos.push({ iter: iter, x: [...x_k], error: error });
+             }
+
+             if (iter === maxIter && error > tol) message += "Máximo de iteraciones alcanzado (puede no haber convergido).";
+             else if (error <= tol) message += "Convergencia alcanzada.";
+
+             return { solucion: x_k, iteraciones: iter, error: error, pasos: pasos, message: message };
+        }
+
+
+        // --- Funcionalidades Adicionales ---
+
+        function mostrarPasoAPasoRaiz() {
+             const pasosDiv = document.getElementById('paso-a-paso-raiz');
+             const contenidoPasos = document.getElementById('pasos-raiz-content');
+             contenidoPasos.innerHTML = ''; // Limpiar
+
+             if (!rootStepsData || rootStepsData.length === 0) {
+                contenidoPasos.textContent = 'No hay pasos disponibles.';
+                pasosDiv.style.display = 'block';
+                return;
+             }
+
+            try {
+                 // Formatear como tabla HTML
+                 let tablaHTML = '<table><thead><tr>';
+                 const headers = Object.keys(rootStepsData[0]);
+                 headers.forEach(key => tablaHTML += `<th>${key}</th>`);
+                 tablaHTML += '</tr></thead><tbody>';
+                 rootStepsData.forEach(paso => {
+                     tablaHTML += '<tr>';
+                     headers.forEach(key => tablaHTML += `<td>${formatNumber(paso[key])}</td>`);
+                     tablaHTML += '</tr>';
+                 });
+                 tablaHTML += '</tbody></table>';
+                 contenidoPasos.innerHTML = tablaHTML;
+                 pasosDiv.style.display = 'block';
+            } catch (e) {
+                 contenidoPasos.textContent = 'Error al formatear los pasos.';
+                 console.error("Error al mostrar pasos raíz:", e);
+            }
+        }
+
+        function mostrarPasoAPasoSistema() {
+             const pasosDiv = document.getElementById('paso-a-paso-sistema');
+             const contenidoPasos = document.getElementById('pasos-sistema-content');
+             contenidoPasos.innerHTML = ''; // Limpiar
+
+             if (!systemStepsData || systemStepsData.length === 0) {
+                 contenidoPasos.textContent = 'No hay pasos disponibles.';
+                 pasosDiv.style.display = 'block';
+                 return;
+             }
+
+             try {
+                  // Formato depende del método (Gauss-Jordan vs Iterativos)
+                  const method = document.getElementById('system-method').value;
+
+                  if (method === 'gauss-jordan') {
+                      let stepsHTML = '';
+                      systemStepsData.forEach(paso => {
+                          stepsHTML += `<h4>Paso ${paso.step}: ${paso.description}</h4>`;
+                          stepsHTML += '<pre>';
+                          // Formatear matriz aumentada
+                           paso.matrix.forEach(row => {
+                               stepsHTML += `[ ${row.map(val => formatNumber(val, 4).padStart(8)).join(' | ')} ]\n`; // Alineado simple
+                           });
+                          stepsHTML += '</pre><hr>';
+                      });
+                      contenidoPasos.innerHTML = stepsHTML;
+
+                  } else { // Jacobi o Gauss-Seidel
+                      let tablaHTML = '<table><thead><tr><th>Iteración (k)</th><th>Vector x<sup>(k)</sup></th><th>Error ||x<sup>(k)</sup> - x<sup>(k-1)</sup>||<sub>∞</sub></th></tr></thead><tbody>';
+                      systemStepsData.forEach(paso => {
+                          tablaHTML += '<tr>';
+                          tablaHTML += `<td>${paso.iter}</td>`;
+                          tablaHTML += `<td><pre>${JSON.stringify(paso.x.map(v => formatNumber(v, 6)), null, 1)}</pre></td>`;
+                          tablaHTML += `<td>${paso.error !== null ? formatNumber(paso.error, 8) : 'N/A'}</td>`;
+                          tablaHTML += '</tr>';
+                      });
+                      tablaHTML += '</tbody></table>';
+                      contenidoPasos.innerHTML = tablaHTML;
+                  }
+                  pasosDiv.style.display = 'block';
+
+             } catch(e) {
+                  contenidoPasos.textContent = 'Error al formatear los pasos del sistema.';
+                  console.error("Error al mostrar pasos sistema:", e);
+             }
+        }
+
+
+        const teorias = { // Textos de la respuesta anterior
+            'biseccion': "El método de bisección es un algoritmo iterativo para encontrar raíces de una función continua...",
+            'regula-falsi': "El método de Regula Falsi (o Falsa Posición) es similar a la bisección...",
+            'newton': "El método de Newton-Raphson es un método abierto que aproxima una raíz...",
+            'secante': "El método de la Secante es una alternativa al método de Newton...",
+            'gauss-jordan': "La eliminación de Gauss-Jordan es un método directo para resolver sistemas...",
+            'jacobi': "El método de Jacobi es un algoritmo iterativo para resolver sistemas lineales Ax = b...",
+            'gauss-seidel': "El método de Gauss-Seidel es una mejora del método de Jacobi..."
+        };
+
+        function mostrarTeoria(type) {
+             let method = (type === 'root') ? document.getElementById('root-method').value : document.getElementById('system-method').value;
+             let teoriaDiv = document.getElementById(type === 'root' ? 'teoria-raiz' : 'teoria-sistema');
+             let teoriaContent = document.getElementById(type === 'root' ? 'teoria-raiz-content' : 'teoria-sistema-content');
+             teoriaContent.textContent = teorias[method] || "Teoría no disponible.";
+             teoriaDiv.style.display = 'block';
+             // Ocultar el otro panel de teoría si está visible
+             let otherTeoriaDiv = document.getElementById(type === 'root' ? 'teoria-sistema' : 'teoria-raiz');
+             otherTeoriaDiv.style.display = 'none';
+        }
+
+
+        // --- Funciones de Graficación ---
+        function graficarFuncion(func, intervalo, raiz = null) {
+            const canvas = document.getElementById('grafica-raices');
+            const ctx = canvas.getContext('2d');
+            if (typeof Chart === 'undefined') return; // Salir si Chart.js no está
+
+            if (currentChart) currentChart.destroy();
+
+            if (!intervalo || intervalo.length < 2 || isNaN(intervalo[0]) || isNaN(intervalo[1])) intervalo = [-5, 5];
+            let a = Math.min(intervalo[0], intervalo[1]);
+            let b = Math.max(intervalo[0], intervalo[1]);
+             if (a === b) { a -= 1; b += 1; }
+            const range = b - a;
+            a -= range * 0.1; b += range * 0.1;
+
+            const points = [];
+            const step = (b - a) / 150;
+            for (let x = a; x <= b; x += step) {
+                try {
+                    const y = func(x);
+                    if (!isNaN(y) && isFinite(y)) {
+                        const MAX_Y = 1e6, MIN_Y = -1e6; // Evitar valores extremos
+                        points.push({ x: x, y: Math.max(MIN_Y, Math.min(MAX_Y, y)) });
+                    } else points.push({x: x, y: null}); // Cortar línea si no es finito
+                } catch (e) { points.push({x: x, y: null}); }
+            }
+
+            const datasets = [{
+                label: 'f(x)', data: points, borderColor: '#87CEFA', borderWidth: 2.5, fill: false, tension: 0.1, pointRadius: 0, showLine: true
+            }, { // Eje X
+                label: 'Eje X', data: [{x: a, y: 0}, {x: b, y: 0}], borderColor: '#ccc', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false, showLine: true
+            }];
+
+            if (raiz !== null && !isNaN(raiz) && isFinite(raiz)) {
+                 try {
+                    const yRaiz = func(raiz);
+                     if (!isNaN(yRaiz) && isFinite(yRaiz)) {
+                         datasets.push({
+                             label: `Raíz ≈ ${formatNumber(raiz)}`, data: [{ x: raiz, y: yRaiz }],
+                             borderColor: '#FF6384', backgroundColor: '#FF6384',
+                             pointRadius: 6, pointHoverRadius: 8, showLine: false, type: 'scatter'
+                         });
+                     }
+                 } catch(e){ console.warn("No se pudo graficar punto raíz.") }
+            }
+
+            currentChart = new Chart(ctx, {
+                type: 'scatter', data: { datasets: datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { type: 'linear', position: 'bottom', title: { display: true, text: 'x', color: '#e0e0ff' }, grid: { color: '#444' }, ticks: { color: '#e0e0ff' } },
+                        y: { title: { display: true, text: 'f(x)', color: '#e0e0ff' }, grid: { color: '#444' }, ticks: { color: '#e0e0ff' } }
+                    },
+                    plugins: { legend: { labels: { color: '#e0e0ff' } }, tooltip: { /*callbacks: ...*/ } },
+                     interaction: { mode: 'index', intersect: false }, // Mejor tooltip
+                }
+            });
+        }
+         function clearGraph() {
+             if (currentChart) currentChart.destroy();
+             const canvas = document.getElementById('grafica-raices');
+             const ctx = canvas.getContext('2d');
+             ctx.clearRect(0, 0, canvas.width, canvas.height);
+         }
+
+
+        // --- Funciones de Exportación ---
+        function exportarImagen(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const btn = document.getElementById('export-img-btn'); // Botón específico
+            if (typeof html2canvas === 'undefined') { alert("Error: html2canvas no cargado."); return; }
+             if(!currentChart) { alert("No hay gráfica para exportar."); return; } // Chequear si hay gráfico
+
+             btn.textContent = 'Generando...'; btn.disabled = true;
+            html2canvas(canvas, { backgroundColor: '#f0f0f8', useCORS: true }).then(canvasExport => {
+                const imageURL = canvasExport.toDataURL("image/png");
+                const downloadLink = document.createElement('a');
+                downloadLink.href = imageURL;
+                downloadLink.download = `grafica_${canvasId}_${Date.now()}.png`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }).catch(err => {
+                 console.error("Error exportando imagen:", err); alert("Error al exportar.");
+            }).finally(() => {
+                 btn.textContent = 'Exportar Imagen'; btn.disabled = false;
+            });
+        }
+
+        function exportarGifRaiz() {
+            alert("Exportación GIF no implementada.");
+            console.warn("Exportación GIF no implementada.");
+        }
+
+
+        // --- Utilidades ---
+        function insertMathSymbol(symbol) {
+             const funcionInput = document.getElementById('funcion');
+             const derivadaInput = document.getElementById('derivada');
+             let targetInput = document.activeElement;
+
+             // Si el foco no está en un input relevante, usar 'funcion' por defecto
+             if (targetInput !== funcionInput && (targetInput !== derivadaInput || derivadaInput.style.display === 'none')) {
+                 targetInput = funcionInput;
+             }
+
+             if (targetInput && (targetInput === funcionInput || targetInput === derivadaInput)) {
+                 const start = targetInput.selectionStart;
+                 const end = targetInput.selectionEnd;
+                 const text = targetInput.value;
+                 let newText = text.substring(0, start) + symbol + text.substring(end);
+                 targetInput.value = newText;
+                 targetInput.focus();
+
+                 // Posicionar cursor inteligentemente
+                 let cursorPos = start + symbol.length;
+                  const parenIndex = symbol.indexOf('()');
+                 if (parenIndex !== -1 && !symbol.includes(',')) { // Simple ()
+                     cursorPos = start + parenIndex + 1;
+                 } else if (symbol.includes('( ,')) { // Log con base
+                     cursorPos = start + symbol.indexOf('(') + 1;
+                 }
+                 targetInput.setSelectionRange(cursorPos, cursorPos);
+             }
+        }
+
+        function clearResults(type) {
+             if (type === 'raiz') {
+                document.getElementById('output-raiz').textContent = 'Esperando entrada...';
+                rootStepsData = [];
+                document.getElementById('paso-a-paso-raiz').style.display = 'none';
+                document.getElementById('teoria-raiz').style.display = 'none';
+                document.getElementById('step-root-btn').disabled = true;
+                document.getElementById('export-img-btn').disabled = true;
+                // document.getElementById('export-gif-btn').disabled = true;
+                clearGraph();
+             } else if (type === 'sistema') {
+                 document.getElementById('output-sistema').textContent = 'Esperando entrada...';
+                 systemStepsData = [];
+                 document.getElementById('paso-a-paso-sistema').style.display = 'none';
+                 document.getElementById('teoria-sistema').style.display = 'none';
+                 document.getElementById('step-system-btn').disabled = true;
+             }
+        }
+
+        function formatNumber(num, decimals = 6) {
+             if (typeof num !== 'number' || isNaN(num)) return num;
+             if (num === 0) return '0';
+             if (Math.abs(num) > 1e10 || (Math.abs(num) < 1e-9 && num !== 0)) return num.toExponential(decimals);
+             // Usar toPrecision para controlar dígitos significativos podría ser mejor
+             let fixed = num.toFixed(decimals);
+             if (fixed.includes('.')) { // Eliminar ceros finales innecesarios
+                 fixed = fixed.replace(/0+$/, '');
+                 if (fixed.endsWith('.')) fixed = fixed.slice(0, -1);
+             }
+             return fixed === '-0' ? '0' : fixed;
+        }
+
+        // --- Inicialización ---
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('raices'); // Mostrar pestaña inicial
+             // Añadir listeners para limpiar resultados al cambiar inputs importantes
+            document.getElementById('funcion').addEventListener('input', () => clearResults('raiz'));
+             document.getElementById('matriz-a').addEventListener('input', () => clearResults('sistema'));
+             document.getElementById('vector-b').addEventListener('input', () => clearResults('sistema'));
+            // Advertencias si faltan librerías (ya hecho en script anterior, pero bueno tenerlo)
+             if (typeof math === 'undefined') console.warn("Math.js no cargado.");
+             if (typeof Chart === 'undefined') console.warn("Chart.js no cargado.");
+             if (typeof html2canvas === 'undefined') console.warn("html2canvas no cargado.");
+        });
+
+    </script>
+
+</body>
+</html>
