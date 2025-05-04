@@ -5,7 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from sympy import Symbol, sympify
+import json
+import os
+from tkinter import simpledialog
 
+from favoritos import GestorFavoritos
 from metodos_raices import biseccion, regula_falsi, newton, secante
 from metodos_sistemas import gauss_seidel, jacobi, gauss_jordan
 import Validar_txt as vt
@@ -59,11 +63,15 @@ class AplicacionMetodosNumericos:
         self.tab_info = tk.Frame(self.notebook, bg="#f5f5f5")
         self.notebook.add(self.tab_info, text="Información")
         
+        self.tab_favoritos = tk.Frame(self.notebook, bg="#f5f5f5")
+        self.notebook.add(self.tab_favoritos, text="Favoritos")
+        
         # Configurar las pestañas
         self.setup_tab_raices()
         self.setup_tab_sistemas()
         self.setup_tab_info()
-        
+        self.setup_tab_favoritos()
+
         # Barra de estado
         self.status_bar = tk.Label(
             master, 
@@ -322,6 +330,20 @@ class AplicacionMetodosNumericos:
             cursor="hand2"
         ).pack(side=tk.LEFT, pady=2)
         
+        self.btn_guardar_favorito_raices = tk.Button(
+        btn_frame,
+        text="Guardar como Favorito",
+        command=self.guardar_favorito_raices,
+        bg="#2ecc71",  # Verde
+        fg="white",
+        font=("Arial", 10, "bold"),
+        relief="flat",
+        padx=10,
+        pady=5,
+        cursor="hand2"
+        )
+        self.btn_guardar_favorito_raices.pack(side=tk.LEFT)
+
         # ===== PANEL DERECHO =====
         # Frame para resultados
 
@@ -599,7 +621,20 @@ class AplicacionMetodosNumericos:
             fg="#2c3e50"
         )
         self.txt_resultados.pack(fill='both', expand=True, pady=5)
-    
+        
+        self.btn_guardar_favorito_sistemas = tk.Button(
+            method_frame,
+            text="Guardar como Favorito",
+            command=self.guardar_favorito_sistemas,
+            bg="#2ecc71",  # Verde
+            fg="white",
+            font=("Arial", 10, "bold"),
+            relief="flat",
+            padx=10,
+            pady=5,
+            cursor="hand2"
+        )
+        self.btn_guardar_favorito_sistemas.pack(side=tk.RIGHT, padx=(5, 0))
     def setup_tab_info(self):
         # Frame principal
         main_frame = tk.Frame(self.tab_info, bg="#f5f5f5")
@@ -803,7 +838,6 @@ Cada método posee características particulares que los hacen más adecuados pa
             self.lbl_b.config(text="x1 (segunda aproximación):")
             self.entry_b.config(state="normal")
     
-
     def cargar_ejemplo_raiz(self, num_ejemplo):
         """Carga ejemplos predefinidos para búsqueda de raíces"""
         if num_ejemplo == 1:
@@ -964,7 +998,7 @@ Cada método posee características particulares que los hacen más adecuados pa
         except Exception as e:
             messagebox.showerror("Error", f"Error inesperado: {e}")
             self.status_bar.config(text="Error inesperado")
-
+    
     def _mostrar_resultados_raiz(self, raiz, pasos, f):
         """Muestra los resultados de los métodos de búsqueda de raíces"""
         if raiz is None:
@@ -990,7 +1024,6 @@ Cada método posee características particulares que los hacen más adecuados pa
         self._graficar_funcion(f, raiz, pasos)
         
         self.status_bar.config(text=f"Raíz encontrada: {raiz:.8f}")
-
 
     def _graficar_funcion(self, f, raiz, pasos):
         """Grafica la función y la raíz encontrada"""
@@ -1135,34 +1168,487 @@ Cada método posee características particulares que los hacen más adecuados pa
         except Exception as e:
             messagebox.showerror("Error", f"Ocurrió un error: {e}")
             self.status_bar.config(text=f"Error: {str(e)}")
-            
-    def mostrar_resultados_gauss_jordan(self, solucion, pasos):
-        """Muestra los resultados del método de Gauss-Jordan"""
-        self.txt_resultados.insert(tk.END, "PASOS DEL MÉTODO DE GAUSS-JORDAN:\n\n")
+    
+    def setup_tab_favoritos(self):
+        """Configura la pestaña de favoritos"""
+        # Panel principal
+        panel_frame = tk.Frame(self.tab_favoritos, bg="#f5f5f5")
+        panel_frame.pack(fill='both', expand=True, padx=10, pady=10)
         
-        for i, paso in enumerate(pasos):
-            self.txt_resultados.insert(tk.END, f"Paso {i+1}:\n")
-            # Formatear matriz para mejor visualización
-            self.txt_resultados.insert(tk.END, f"{paso}\n\n")
+        # Inicializar gestor de favoritos si aún no existe
+        if not hasattr(self, 'gestor_favoritos'):
+            self.gestor_favoritos = GestorFavoritos()
         
-        self.txt_resultados.insert(tk.END, "="*45 + "\n\n")
-        self.txt_resultados.insert(tk.END, "SOLUCIÓN FINAL:\n")
+        # Panel izquierdo para lista de favoritos
+        panel_izquierdo = tk.Frame(panel_frame, bg="#f5f5f5")
+        panel_izquierdo.pack(side=tk.LEFT, fill='both', expand=True, padx=(0, 5))
         
-        for i, val in enumerate(solucion):
-            self.txt_resultados.insert(tk.END, f"x{i+1} = {val:.8f}\n")
+        # Panel derecho para detalles y acciones
+        panel_derecho = tk.Frame(panel_frame, bg="#f5f5f5")
+        panel_derecho.pack(side=tk.RIGHT, fill='both', expand=True, padx=(5, 0))
+        
+        # Lista de favoritos
+        lista_frame = tk.LabelFrame(
+            panel_izquierdo,
+            text="Mis Favoritos",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 11, "bold"),
+            padx=10,
+            pady=10
+        )
+        lista_frame.pack(fill='both', expand=True)
+        
+        # Lista con scrollbar
+        scrollbar = tk.Scrollbar(lista_frame)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        self.lista_favoritos = tk.Listbox(
+            lista_frame,
+            bg="white",
+            fg="#2c3e50",
+            font=("Arial", 10),
+            selectbackground="#3498db",
+            selectforeground="white",
+            height=20,
+            bd=1,
+            relief="solid",
+            yscrollcommand=scrollbar.set
+        )
+        self.lista_favoritos.pack(side=tk.LEFT, fill='both', expand=True, padx=5, pady=5)
+        scrollbar.config(command=self.lista_favoritos.yview)
+        
+        # Cargar favoritos en la lista
+        self.cargar_lista_favoritos()
+        
+        # Vincular selección de la lista
+        self.lista_favoritos.bind('<<ListboxSelect>>', self.mostrar_detalles_favorito)
+        
+        # Panel de detalles
+        detalles_frame = tk.LabelFrame(
+            panel_derecho,
+            text="Detalles",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 11, "bold"),
+            padx=10,
+            pady=10
+        )
+        detalles_frame.pack(fill='both', expand=True)
+        
+        # Nombre
+        tk.Label(
+            detalles_frame,
+            text="Nombre:",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 10, "bold"),
+            anchor="w"
+        ).pack(fill='x', pady=(10, 0))
+        
+        self.lbl_nombre_fav = tk.Label(
+            detalles_frame,
+            text="",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 10),
+            anchor="w"
+        )
+        self.lbl_nombre_fav.pack(fill='x', pady=(0, 10))
+        
+        # Expresión
+        tk.Label(
+            detalles_frame,
+            text="Expresión:",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 10, "bold"),
+            anchor="w"
+        ).pack(fill='x', pady=(0, 0))
+        
+        self.lbl_expresion_fav = tk.Label(
+            detalles_frame,
+            text="",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 10),
+            anchor="w"
+        )
+        self.lbl_expresion_fav.pack(fill='x', pady=(0, 10))
+        
+        # Descripción
+        tk.Label(
+            detalles_frame,
+            text="Descripción:",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 10, "bold"),
+            anchor="w"
+        ).pack(fill='x', pady=(0, 0))
+        
+        self.lbl_descripcion_fav = tk.Label(
+            detalles_frame,
+            text="",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 10),
+            anchor="w",
+            wraplength=300
+        )
+        self.lbl_descripcion_fav.pack(fill='x', pady=(0, 10))
+        
+        # Fecha
+        tk.Label(
+            detalles_frame,
+            text="Fecha de creación:",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 10, "bold"),
+            anchor="w"
+        ).pack(fill='x', pady=(0, 0))
+        
+        self.lbl_fecha_fav = tk.Label(
+            detalles_frame,
+            text="",
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 10),
+            anchor="w"
+        )
+        self.lbl_fecha_fav.pack(fill='x', pady=(0, 10))
+        
+        # Botones de acción
+        botones_frame = tk.Frame(detalles_frame, bg="#f5f5f5")
+        botones_frame.pack(fill='x', pady=10)
+        
+        self.btn_cargar_fav = tk.Button(
+            botones_frame,
+            text="Cargar en Calculadora",
+            command=self.cargar_favorito_seleccionado,
+            bg="#3498db",
+            fg="white",
+            font=("Arial", 10, "bold"),
+            relief="flat",
+            padx=10,
+            pady=5,
+            cursor="hand2",
+            state="disabled"
+        )
+        self.btn_cargar_fav.pack(side=tk.LEFT, padx=(0, 10))
+        
+        self.btn_eliminar_fav = tk.Button(
+            botones_frame,
+            text="Eliminar",
+            command=self.eliminar_favorito,
+            bg="#e74c3c",
+            fg="white",
+            font=("Arial", 10, "bold"),
+            relief="flat",
+            padx=10,
+            pady=5,
+            cursor="hand2",
+            state="disabled"
+        )
+        self.btn_eliminar_fav.pack(side=tk.LEFT)
 
-    def mostrar_resultados_iterativos(self, solucion, pasos, metodo):
-        """Muestra los resultados de métodos iterativos (Gauss-Seidel, Jacobi)"""
-        self.txt_resultados.insert(tk.END, f"ITERACIONES DEL MÉTODO DE {metodo.upper()}:\n\n")
+    def cargar_lista_favoritos(self):
+        """Carga la lista de favoritos desde el gestor"""
+        # Comprobar si la lista existe
+        if not hasattr(self, 'lista_favoritos'):
+            print("Lista de favoritos aún no inicializada")
+            return
         
-        for i, paso in enumerate(pasos):
-            self.txt_resultados.insert(tk.END, f"Iteración {i}:\n")
-            self.txt_resultados.insert(tk.END, f"{paso}\n\n")
+        try:
+            # Limpiar la lista actual
+            self.lista_favoritos.delete(0, tk.END)
+            
+            # Obtener favoritos
+            favoritos = self.gestor_favoritos.obtener_favoritos()
+            
+            # Verificar si hay favoritos
+            if not favoritos:
+                print("No hay favoritos para cargar")
+                return
+            
+            # Agregar a la lista
+            for fav in favoritos:
+                # Determinar tipo
+                tipo = ""
+                if "parametros" in fav and "tipo" in fav["parametros"]:
+                    if fav["parametros"]["tipo"] == "sistema":
+                        tipo = "[Sistema] "
+                    elif fav["parametros"]["tipo"] == "raiz":
+                        tipo = "[Raíz] "
+                
+                # Añadir a la lista con el prefijo de tipo
+                self.lista_favoritos.insert(tk.END, f"{tipo}{fav['nombre']}")
+            
+            print(f"Cargados {len(favoritos)} favoritos")
+            
+        except Exception as e:
+            print(f"Error al cargar lista de favoritos: {e}")
+
+    def mostrar_detalles_favorito(self, event):
+        """Muestra los detalles del favorito seleccionado"""
+        # Obtener índice seleccionado
+        try:
+            index = self.lista_favoritos.curselection()[0]
+            # Habilitar botones
+            self.btn_cargar_fav.config(state="normal")
+            self.btn_eliminar_fav.config(state="normal")
+        except:
+            # Si no hay selección, limpiar y deshabilitar
+            self.limpiar_detalles_favorito()
+            return
         
-        self.txt_resultados.insert(tk.END, "="*45 + "\n\n")
-        self.txt_resultados.insert(tk.END, "SOLUCIÓN FINAL:\n")
+        # Obtener favorito
+        favoritos = self.gestor_favoritos.obtener_favoritos()
+        if index < len(favoritos):
+            fav = favoritos[index]
+            
+            # Mostrar detalles
+            self.lbl_nombre_fav.config(text=fav["nombre"])
+            self.lbl_expresion_fav.config(text=fav["expresion"])
+            self.lbl_descripcion_fav.config(text=fav.get("descripcion", ""))
+            self.lbl_fecha_fav.config(text=fav.get("fecha_creacion", ""))
+
+    def limpiar_detalles_favorito(self):
+        """Limpia los detalles mostrados"""
+        self.lbl_nombre_fav.config(text="")
+        self.lbl_expresion_fav.config(text="")
+        self.lbl_descripcion_fav.config(text="")
+        self.lbl_fecha_fav.config(text="")
+        self.btn_cargar_fav.config(state="disabled")
+        self.btn_eliminar_fav.config(state="disabled")
+
+    def eliminar_favorito(self):
+        """Elimina el favorito seleccionado"""
+        try:
+            index = self.lista_favoritos.curselection()[0]
+            nombre = self.lista_favoritos.get(index)
+            
+            # Confirmar eliminación
+            if messagebox.askyesno("Confirmar eliminación", 
+                                f"¿Está seguro de eliminar '{nombre}' de sus favoritos?"):
+                # Eliminar favorito
+                self.gestor_favoritos.eliminar_favorito(nombre)
+                # Actualizar lista
+                self.cargar_lista_favoritos()
+                # Limpiar detalles
+                self.limpiar_detalles_favorito()
+                # Actualizar barra de estado
+                self.status_bar.config(text=f"Favorito '{nombre}' eliminado correctamente")
+        except:
+            messagebox.showerror("Error", "No se pudo eliminar el favorito")
+
+    def cargar_favorito_seleccionado(self):
+        """Carga el favorito seleccionado en la calculadora correspondiente"""
+        try:
+            index = self.lista_favoritos.curselection()[0]
+            favoritos = self.gestor_favoritos.obtener_favoritos()
+            if index < len(favoritos):
+                fav = favoritos[index]
+                
+                # Determinar si es un sistema o una función
+                es_sistema = False
+                if "parametros" in fav and "tipo" in fav["parametros"]:
+                    es_sistema = fav["parametros"]["tipo"] == "sistema"
+                else:
+                    # Método antiguo (para compatibilidad)
+                    es_sistema = fav["expresion"].startswith("Sistema:")
+                
+                print(f"Cargando favorito: {fav['nombre']}, tipo: {'sistema' if es_sistema else 'raíz'}")
+                
+                if es_sistema:
+                    # Cargar sistema de ecuaciones
+                    self.notebook.select(self.tab_sistemas)  # Cambiar a la pestaña de sistemas
+                    
+                    if "parametros" in fav:
+                        # Cargar matriz A
+                        if "matriz_a" in fav["parametros"]:
+                            self.txt_matriz_a.delete("1.0", tk.END)
+                            self.txt_matriz_a.insert("1.0", fav["parametros"]["matriz_a"])
+                        
+                        # Cargar vector b
+                        if "vector_b" in fav["parametros"]:
+                            self.txt_vector_b.delete(0, tk.END)
+                            self.txt_vector_b.insert(0, fav["parametros"]["vector_b"])
+                        
+                        # Cargar vector x0 si existe
+                        if "x0" in fav["parametros"]:
+                            self.txt_vector_x0.delete(0, tk.END)
+                            self.txt_vector_x0.insert(0, fav["parametros"]["x0"])
+                        
+                        # Establecer método
+                        if "metodo" in fav["parametros"]:
+                            self.metodo_var.set(fav["parametros"]["metodo"])
+                    
+                else:
+                    # Cargar función de búsqueda de raíces
+                    self.notebook.select(self.tab_raices)  # Cambiar a la pestaña de raíces
+                    
+                    # Cargar expresión
+                    self.entry_funcion.delete(0, tk.END)
+                    self.entry_funcion.insert(0, fav["expresion"])
+                    
+                    # Cargar parámetros si existen
+                    if "parametros" in fav:
+                        if "a" in fav["parametros"]:
+                            self.entry_a.delete(0, tk.END)
+                            self.entry_a.insert(0, str(fav["parametros"]["a"]))
+                        if "b" in fav["parametros"]:
+                            self.entry_b.delete(0, tk.END)
+                            self.entry_b.insert(0, str(fav["parametros"]["b"]))
+                
+                # Actualizar barra de estado
+                self.status_bar.config(text=f"Favorito '{fav['nombre']}' cargado correctamente")
+                
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo cargar el favorito: {str(e)}")
+            print(f"Error al cargar favorito: {e}")  # Para depuración
+    def guardar_favorito_raices(self):
+                """Guarda la función actual como favorito"""
+                # Obtener datos actuales
+                funcion = self.entry_funcion.get()
+                if not funcion:
+                    messagebox.showerror("Error", "La función no puede estar vacía")
+                    return
+                
+                # Obtener parámetros
+                parametros = {
+                    "tipo": "raiz"  # Añadir indicador de tipo
+                }
+                
+                try:
+                    a = float(self.entry_a.get())
+                    parametros["a"] = a
+                    
+                    # Solo agregar b si está habilitado
+                    if self.entry_b.cget("state") != "disabled":
+                        b = float(self.entry_b.get())
+                        parametros["b"] = b
+                except ValueError:
+                    # Si hay error de conversión, continuar con advertencia
+                    messagebox.showwarning("Advertencia", "No se pudieron convertir algunos parámetros a números. Se guardarán como texto.")
+                    parametros["a"] = self.entry_a.get()
+                    if self.entry_b.cget("state") != "disabled":
+                        parametros["b"] = self.entry_b.get()
+                
+                # Solicitar nombre y descripción
+                nombre = simpledialog.askstring("Guardar como favorito", 
+                                            "Ingrese un nombre para este favorito:",
+                                            parent=self.master)
+                if not nombre:
+                    return  # Cancelado por el usuario
+                
+                descripcion = simpledialog.askstring("Descripción (opcional)", 
+                                                "Ingrese una descripción (opcional):",
+                                                parent=self.master)
+                
+                # Guardar favorito
+                try:
+                    self.gestor_favoritos.agregar_favorito(nombre, funcion, descripcion, parametros)
+                    
+                    # Agregar también al historial
+                    metodo = self.metodo_raices_var.get()
+                    self.gestor_favoritos.agregar_al_historial(funcion, metodo, parametros)
+                    
+                    # Forzar la recarga de la lista de favoritos independientemente de la pestaña actual
+                    self.cargar_lista_favoritos()
+                    
+                    # Actualizar barra de estado
+                    self.status_bar.config(text=f"Función guardada como favorito: '{nombre}'")
+                    
+                    # Mostrar mensaje de éxito
+                    messagebox.showinfo("Éxito", f"La función '{nombre}' ha sido guardada como favorito")
+                    
+                except Exception as e:
+                    messagebox.showerror("Error", f"No se pudo guardar el favorito: {str(e)}")
+                    print(f"Error al guardar favorito: {e}")  # Para depuración
+                
+    def guardar_favorito_sistemas(self):
+        """Guarda el sistema actual como favorito"""
+        # Obtener matriz A y vector b
+        matriz_a_text = self.txt_matriz_a.get("1.0", tk.END).strip()
+        vector_b_text = self.txt_vector_b.get().strip()
         
-        for i, val in enumerate(solucion):
-            self.txt_resultados.insert(tk.END, f"x{i+1} = {val:.8f}\n")
+        if not matriz_a_text or not vector_b_text:
+            messagebox.showerror("Error", "La matriz A y el vector b no pueden estar vacíos")
+            return
         
-        self.txt_resultados.insert(tk.END, f"\nConvergencia alcanzada en {len(pasos)-1} iteraciones")
+        # Validar el formato de la matriz y vector
+        try:
+            # Usar Validar_txt para verificar formato
+            valido_a, _ = vt.validar_matriz_texto(matriz_a_text)
+            if not valido_a:
+                messagebox.showerror("Error", "El formato de la matriz A no es válido")
+                return
+                
+            valido_b, _ = vt.validar_vector_texto(vector_b_text)
+            if not valido_b:
+                messagebox.showerror("Error", "El formato del vector b no es válido")
+                return
+        except Exception as e:
+            messagebox.showerror("Error de validación", f"Error al validar los datos: {str(e)}")
+            return
+        
+        # Crear una expresión representativa
+        expresion = f"Sistema: {matriz_a_text} | {vector_b_text}"
+        
+        # Obtener parámetros
+        parametros = {
+            "matriz_a": matriz_a_text,
+            "vector_b": vector_b_text,
+            "metodo": self.metodo_var.get(),
+            "tipo": "sistema"  # Añadir indicador de tipo
+        }
+        
+        # Intentar agregar x0 si existe
+        x0_text = self.txt_vector_x0.get().strip()
+        if x0_text:
+            try:
+                valido_x0, _ = vt.validar_vector_texto(x0_text)
+                if valido_x0:
+                    parametros["x0"] = x0_text
+                else:
+                    if messagebox.askyesno("Advertencia", 
+                                        "El formato del vector x0 no es válido. ¿Desea continuar sin incluirlo?"):
+                        pass  # Continuar sin x0
+                    else:
+                        return  # Cancelar la operación
+            except:
+                # Ignorar x0 si hay error
+                pass
+        
+        # Solicitar nombre y descripción
+        nombre = simpledialog.askstring("Guardar como favorito", 
+                                    "Ingrese un nombre para este sistema:",
+                                    parent=self.master)
+        if not nombre:
+            return  # Cancelado por el usuario
+        
+        descripcion = simpledialog.askstring("Descripción (opcional)", 
+                                        "Ingrese una descripción (opcional):",
+                                        parent=self.master)
+        
+        # Guardar favorito
+        try:
+            self.gestor_favoritos.agregar_favorito(nombre, expresion, descripcion, parametros)
+            
+            # Agregar también al historial
+            metodo = self.metodo_var.get()
+            self.gestor_favoritos.agregar_al_historial(expresion, metodo, parametros)
+            
+            # Forzar la recarga de la lista de favoritos independientemente de la pestaña actual
+            self.cargar_lista_favoritos()
+            
+            # Actualizar barra de estado
+            self.status_bar.config(text=f"Sistema guardado como favorito: '{nombre}'")
+            
+            # Mostrar mensaje de éxito
+            messagebox.showinfo("Éxito", f"El sistema '{nombre}' ha sido guardado como favorito")
+            
+        except Exception as e:
+            # Mostrar el error específico
+            messagebox.showerror("Error", f"No se pudo guardar el favorito: {str(e)}")
+            print(f"Error al guardar favorito: {e}")  # Para depuración

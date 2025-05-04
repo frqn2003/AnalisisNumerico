@@ -1,0 +1,147 @@
+[
+    {
+        "expresion": "Sistema: 2 1 -1;\n-3 -1 2;\n-2 1 2 | 8 -11 -3",
+        "metodo": "Gauss-Jordan",
+        "parametros": {
+            "matriz_a": "2 1 -1;\n-3 -1 2;\n-2 1 2",
+            "vector_b": "8 -11 -3",
+            "metodo": "Gauss-Jordan",
+            "tipo": "sistema"
+        },
+        "fecha_uso": "2025-05-04 19:21:24"
+    },
+    {
+        "expresion": "x**3 - x - 2",
+        "metodo": "Bisecci\u00f3n",
+        "parametros": {
+            "tipo": "raiz",
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_uso": "2025-05-04 19:21:14"
+    },
+    {
+        "expresion": "x**3 - x - 3",
+        "metodo": "Bisecci\u00f3n",
+        "parametros": {
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_uso": "2025-05-04 19:15:50"
+    },
+    {
+        "expresion": "x**3 - x - 2",
+        "metodo": "Bisecci\u00f3n",
+        "parametros": {
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_uso": "2025-05-04 19:15:36"
+    },
+    {
+        "expresion": "x**3 - x - 3",
+        "metodo": "Bisecci\u00f3n",
+        "parametros": {
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_uso": "2025-05-04 19:13:37"
+    },
+    {
+        "expresion": "x**3 - x - 2",
+        "metodo": "Bisecci\u00f3n",
+        "parametros": {
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_uso": "2025-05-04 19:12:49"
+    },
+    {
+        "expresion": "x**3 - x - 2",
+        "metodo": "Bisecci\u00f3n",
+        "parametros": {
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_uso": "2025-05-04 19:12:08"
+    },
+    {
+        "expresion": "x**3 - x - 2",
+        "metodo": "Bisecci\u00f3n",
+        "parametros": {
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_uso": "2025-05-04 19:08:06"
+    },
+    {
+        "expresion": "Sistema: 10 -1 2;\n-1 11 -1;\n2 -1 10 | 6 25 -11",
+        "metodo": "Gauss-Seidel",
+        "parametros": {
+            "matriz_a": "10 -1 2;\n-1 11 -1;\n2 -1 10",
+            "vector_b": "6 25 -11",
+            "metodo": "Gauss-Seidel",
+            "x0": "0 0 0"
+        },
+        "fecha_uso": "2025-05-04 19:07:45"
+    },
+    {
+        "expresion": "Sistema: 10 -1 2;\n-1 11 -1;\n2 -1 10 | 6 25 -11",
+        "metodo": "Gauss-Seidel",
+        "parametros": {
+            "matriz_a": "10 -1 2;\n-1 11 -1;\n2 -1 10",
+            "vector_b": "6 25 -11",
+            "metodo": "Gauss-Seidel",
+            "x0": "0 0 0"
+        },
+        "fecha_uso": "2025-05-04 19:07:34"
+    },
+    {
+        "expresion": "x**3 - x - 2",
+        "metodo": "Bisecci\u00f3n",
+        "parametros": {
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_uso": "2025-05-04 19:07:07"
+    },
+    {
+        "expresion": "Sistema: 2 1 -1;\n-3 -1 2;\n-2 1 2 | 8 -11 -3",
+        "metodo": "Gauss-Jordan",
+        "parametros": {
+            "matriz_a": "2 1 -1;\n-3 -1 2;\n-2 1 2",
+            "vector_b": "8 -11 -3",
+            "metodo": "Gauss-Jordan"
+        },
+        "fecha_uso": "2025-05-04 18:58:28"
+    },
+    {
+        "expresion": "Sistema: 2 1 -1;\n-3 -1 2;\n-2 1 2 | 8 -11 -3",
+        "metodo": "Gauss-Jordan",
+        "parametros": {
+            "matriz_a": "2 1 -1;\n-3 -1 2;\n-2 1 2",
+            "vector_b": "8 -11 -3",
+            "metodo": "Gauss-Jordan"
+        },
+        "fecha_uso": "2025-05-04 18:58:19"
+    },
+    {
+        "expresion": "Sistema: 2 1 -1;\n-3 -1 2;\n-2 1 2 | 8 -11 -3",
+        "metodo": "Gauss-Jordan",
+        "parametros": {
+            "matriz_a": "2 1 -1;\n-3 -1 2;\n-2 1 2",
+            "vector_b": "8 -11 -3",
+            "metodo": "Gauss-Jordan"
+        },
+        "fecha_uso": "2025-05-04 18:58:11"
+    },
+    {
+        "expresion": "x**3 - x - 2",
+        "metodo": "Bisecci\u00f3n",
+        "parametros": {
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_uso": "2025-05-04 18:56:41"
+    }
+]

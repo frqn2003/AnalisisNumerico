@@ -1,0 +1,55 @@
+[
+    {
+        "nombre": "Funci\u00f3n Polin\u00f3mica C\u00fabica",
+        "expresion": "x**3 - x - 2",
+        "descripcion": "Polinomio de tercer grado con una ra\u00edz real",
+        "parametros": {
+            "a": 1,
+            "b": 2
+        },
+        "fecha_creacion": "2025-05-04 18:52:41"
+    },
+    {
+        "nombre": "Funci\u00f3n Trigonom\u00e9trica",
+        "expresion": "sin(x) - x/2",
+        "descripcion": "Funci\u00f3n trigonom\u00e9trica con m\ufffd\ufffdltiples ra\u00edces",
+        "parametros": {
+            "a": 0,
+            "b": 2
+        },
+        "fecha_creacion": "2025-05-04 18:52:41"
+    },
+    {
+        "nombre": "Funci\u00f3n Exponencial",
+        "expresion": "exp(-x) - x",
+        "descripcion": "Funci\u00f3n exponencial con una ra\u00edz positiva",
+        "parametros": {
+            "a": 0,
+            "b": 1
+        },
+        "fecha_creacion": "2025-05-04 18:52:41"
+    },
+    {
+        "nombre": "a",
+        "expresion": "x**3 - x - 2",
+        "descripcion": "",
+        "parametros": {
+            "tipo": "raiz",
+            "a": 1.0,
+            "b": 2.0
+        },
+        "fecha_creacion": "2025-05-04 19:21:14"
+    },
+    {
+        "nombre": "b",
+        "expresion": "Sistema: 2 1 -1;\n-3 -1 2;\n-2 1 2 | 8 -11 -3",
+        "descripcion": "",
+        "parametros": {
+            "matriz_a": "2 1 -1;\n-3 -1 2;\n-2 1 2",
+            "vector_b": "8 -11 -3",
+            "metodo": "Gauss-Jordan",
+            "tipo": "sistema"
+        },
+        "fecha_creacion": "2025-05-04 19:21:24"
+    }
+]
