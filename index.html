@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Métodos Numéricos - App Interactiva</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #181c23 0%, #232b36 100%);
+      color: #fff;
+      font-family: 'Roboto', Arial, sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+    /* Fondo animado con gradientes y glassmorphism */
+    .background-glass {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0; left: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .glass-blur {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.25;
+      animation: floatGlass 18s ease-in-out infinite alternate;
+    }
+    .glass1 { width: 420px; height: 420px; background: #00c6ff; left: -120px; top: -80px; animation-delay: 0s;}
+    .glass2 { width: 320px; height: 320px; background: #0072ff; right: -100px; top: 60px; animation-delay: 2s;}
+    .glass3 { width: 260px; height: 260px; background: #fff; left: 60vw; bottom: -80px; opacity: 0.10; animation-delay: 4s;}
+    @keyframes floatGlass {
+      0% { transform: translateY(0) scale(1);}
+      100% { transform: translateY(-40px) scale(1.08);}
+    }
+    .bubbles {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0; left: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+      border-radius: 50%;
+      opacity: 0.13;
+      animation: rise 14s linear infinite;
+    }
+    @keyframes rise {
+      0% { transform: translateY(0) scale(1); opacity: 0.18; }
+      80% { opacity: 0.22; }
+      100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
+    }
+    .main-content {
+      position: relative;
+      z-index: 3;
+      max-width: 720px;
+      margin: 70px auto 40px auto;
+      background: rgba(28, 32, 40, 0.82);
+      border-radius: 28px;
+      box-shadow: 0 8px 40px 0 rgba(0, 114, 255, 0.22), 0 1.5px 8px 0 rgba(0,0,0,0.18);
+      padding: 54px 44px 44px 44px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(0,198,255,0.09);
+      animation: fadeIn 1.2s cubic-bezier(.77,0,.18,1) 0.1s both;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(40px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 18px;
+      border-radius: 50%;
+      box-shadow: 0 4px 24px 0 rgba(0, 114, 255, 0.25);
+      background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      margin-right: auto;
+      animation: popIn 1s cubic-bezier(.77,0,.18,1) 0.2s both;
+      border: 3px solid rgba(255,255,255,0.13);
+    }
+    .logo svg {
+      width: 60px;
+      height: 60px;
+      fill: #fff;
+      filter: drop-shadow(0 2px 8px #0072ff55);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.7);}
+      to { opacity: 1; transform: scale(1);}
+    }
+    h1 {
+      font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+      font-size: 2.7rem;
+      margin-bottom: 0.25em;
+      letter-spacing: 1px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 8px #0072ff33;
+    }
+    .subtitle {
+      font-size: 1.22rem;
+      color: #b0e0ff;
+      margin-bottom: 1.7em;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 48px;
+      font-size: 1.28rem;
+      color: #fff;
+      background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 6px 24px rgba(0, 114, 255, 0.32), 0 1.5px 8px 0 rgba(0,0,0,0.18);
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1.7em;
+      margin-top: 1.2em;
+      animation: fadeIn 1.2s cubic-bezier(.77,0,.18,1) 0.3s both;
+      border: 2px solid rgba(255,255,255,0.13);
+    }
+    .download-btn:after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.18);
+      border-radius: 100%;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s cubic-bezier(.77,0,.18,1), height 0.4s cubic-bezier(.77,0,.18,1);
+      z-index: 1;
+    }
+    .download-btn:hover:after {
+      width: 220%;
+      height: 600%;
+    }
+    .download-btn:hover {
+      background: linear-gradient(90deg, #0072ff 0%, #00c6ff 100%);
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 8px 32px rgba(0, 114, 255, 0.42), 0 2px 12px 0 rgba(0,0,0,0.22);
+    }
+    .download-btn span, .download-btn i {
+      position: relative;
+      z-index: 2;
+    }
+    .features, .methods, .instructions {
+      text-align: left;
+      margin: 2.2em 0 1.5em 0;
+      padding: 0 0.5em;
+    }
+    .features ul, .methods ul {
+      margin: 0.5em 0 0 1.2em;
+      padding: 0;
+      font-size: 1.09em;
+    }
+    .features li, .methods li {
+      margin-bottom: 0.5em;
+      line-height: 1.6;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .features li i, .methods li i {
+      color: #00c6ff;
+      font-size: 1.1em;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-size: 1.3em;
+      color: #00c6ff;
+      margin-bottom: 0.4em;
+      margin-top: 1.2em;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .instructions {
+      background: rgba(0, 198, 255, 0.09);
+      border-radius: 12px;
+      padding: 1.2em 1.2em 1em 1.2em;
+      margin-top: 2em;
+      font-size: 1.06em;
+      color: #e0e0e0;
+      border: 1px solid rgba(0,198,255,0.13);
+      box-shadow: 0 2px 12px rgba(0,114,255,0.07);
+    }
+    .instructions code {
+      background: #232b36;
+      color: #00c6ff;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 0.98em;
+    }
+    .screenshots {
+      margin: 2.5em 0 1.5em 0;
+      text-align: center;
+    }
+    .screenshots img {
+      max-width: 180px;
+      border-radius: 14px;
+      margin: 0 10px 10px 0;
+      box-shadow: 0 2px 12px #0072ff33;
+      border: 2px solid #232b36;
+      background: #232b36;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .screenshots img:hover {
+      transform: scale(1.04) rotate(-2deg);
+      box-shadow: 0 6px 32px rgba(0,198,255,0.27);
+      border-color: rgba(0,198,255,0.53);
+    }
+    @media (max-width: 800px) {
+      .main-content {
+        padding: 24px 4vw 18px 4vw;
+        max-width: 99vw;
+        margin: 24px auto;
+      }
+      h1 { font-size: 1.5rem; }
+      .logo { width: 64px; height: 64px; }
+      .logo svg { width: 38px; height: 38px; }
+      .screenshots img { max-width: 90vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-glass">
+    <div class="glass-blur glass1"></div>
+    <div class="glass-blur glass2"></div>
+    <div class="glass-blur glass3"></div>
+  </div>
+  <div class="bubbles"></div>
+  <div class="main-content">
+    <div class="logo">
+      <!-- Logo SVG de ejemplo (puedes reemplazarlo por tu logo) -->
+      <svg viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="28" fill="#fff" opacity="0.08"/>
+        <path d="M32 12L44 32H20L32 12Z" fill="#fff"/>
+        <circle cx="32" cy="40" r="6" fill="#fff"/>
+      </svg>
+    </div>
+    <h1>Métodos Numéricos</h1>
+    <div class="subtitle">
+      Calculadora interactiva de métodos numéricos para Android
+    </div>
+    <a class="download-btn"
+       href="https://drive.google.com/uc?export=download&id=1U5WmdZ_dDHgV10EdwBbEUxcRlx4ub62o"
+       target="_blank" rel="noopener">
+      <i class="bi bi-download"></i>
+      <span>Descargar APK</span>
+    </a>
+    <div class="features">
+      <div class="section-title">Características principales</div>
+      <ul>
+        <li><i class="bi bi-moon-stars"></i> Interfaz moderna en modo oscuro, amigable y fácil de usar.</li>
+        <li><i class="bi bi-graph-up"></i> Resolución de ecuaciones no lineales y sistemas lineales.</li>
+        <li><i class="bi bi-bar-chart-line"></i> Visualización gráfica de funciones y soluciones.</li>
+        <li><i class="bi bi-eye"></i> Paso a paso visual de los métodos.</li>
+        <li><i class="bi bi-image"></i> Exportación de gráficos como imagen o GIF animado.</li>
+        <li><i class="bi bi-journal-text"></i> Teoría y explicación de cada método incluida.</li>
+        <li><i class="bi bi-clock-history"></i> Historial de cálculos recientes.</li>
+      </ul>
+    </div>
+    <div class="methods">
+      <div class="section-title">Métodos incluidos</div>
+      <ul>
+        <li><i class="bi bi-arrow-left-right"></i> <b>Bisección</b>: Encuentra raíces dividiendo el intervalo.</li>
+        <li><i class="bi bi-lightning"></i> <b>Newton-Raphson</b>: Aproximación rápida usando derivadas.</li>
+        <li><i class="bi bi-slash-circle"></i> <b>Secante</b>: Método sin derivadas, usando dos puntos.</li>
+        <li><i class="bi bi-diagram-3"></i> <b>Regula Falsi</b>: Variante de bisección con mejor convergencia.</li>
+        <li><i class="bi bi-grid-3x3-gap"></i> <b>Gauss-Jordan</b>: Resolución directa de sistemas lineales.</li>
+        <li><i class="bi bi-repeat"></i> <b>Jacobi</b>: Método iterativo para sistemas.</li>
+        <li><i class="bi bi-arrow-repeat"></i> <b>Gauss-Seidel</b>: Iterativo, mejora Jacobi usando valores recientes.</li>
+      </ul>
+    </div>
+    <div class="instructions">
+      <div class="section-title">¿Cómo instalar?</div>
+      <ol>
+        <li>Descarga el archivo <b>Métodos Numéricos APK</b> usando el botón de arriba.</li>
+        <li>Copia el archivo a tu dispositivo Android si lo descargaste en PC.</li>
+        <li>En tu Android, abre el archivo descargado.<br>
+            Si es la primera vez, permite la instalación de apps desde fuentes desconocidas.</li>
+        <li>Sigue las instrucciones en pantalla para instalar la app.</li>
+      </ol>
+      <div style="margin-top:0.7em;">
+        <b>Requisitos:</b> Android 5.0 o superior.<br>
+        <b>Nota:</b> Si tienes problemas con la instalación, revisa los permisos de tu dispositivo.
+      </div>
+    </div>
+    <div class="screenshots">
+      <!-- Puedes agregar capturas de pantalla aquí -->
+      <!-- <img src="screenshot1.png" alt="Pantalla principal">
+      <img src="screenshot2.png" alt="Visualización gráfica"> -->
+    </div>
+    <div style="margin-top:2em; color:#b0e0ff; font-size:0.98em;">
+      Desarrollado con <span style="color:#00c6ff;">Kivy</span> y <span style="color:#00c6ff;">Python</span>.<br>
+      <span style="font-size:0.93em; color:#aaa;">© 2024 Métodos Numéricos App</span>
+    </div>
+  </div>
+  <script>
+    // Burbujas animadas
+    const bubbles = document.querySelector('.bubbles');
+    const colors = ['#00c6ff', '#0072ff', '#fff'];
+    for(let i=0; i<22; i++) {
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      const size = Math.random() * 48 + 24;
+      b.style.width = b.style.height = size + 'px';
+      b.style.left = (Math.random() * 100) + 'vw';
+      b.style.animationDuration = (10 + Math.random() * 10) + 's';
+      b.style.background = `linear-gradient(135deg, ${colors[i%colors.length]} 0%, #0072ff 100%)`;
+      b.style.opacity = 0.10 + Math.random() * 0.15;
+      bubbles.appendChild(b);
+    }
+  </script>
+</body>
+</html>
