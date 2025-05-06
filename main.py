@@ -9,7 +9,7 @@ import os
 import json
 
 # Asegurar que favoritos.py y gui_desktop.py estén accesibles
-from gui_desktop import AplicacionMetodosNumericos
+from gui_desktop_corregido import AplicacionMetodosNumericos
 from favoritos import GestorFavoritos
 
 def verificar_archivos_requeridos():

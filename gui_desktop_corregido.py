@@ -18,11 +18,11 @@ from idiomas import GestorIdiomas
 class AplicacionMetodosNumericos:
     def __init__(self, master):
         self.master = master
-        master.title("MathWorks 2025 - Métodos Numéricos")
-        master.geometry("1000x700")
-        master.configure(bg="#f0f0f0")
+        
+        # Inicializar el gestor de idiomas primero
         self.gestor_idiomas = GestorIdiomas(idioma_inicial="es")
         
+        # Usar el gestor para configurar el título
         master.title(self.gestor_idiomas.obtener_texto("app_title"))
         master.geometry("1000x700")
         master.configure(bg="#f0f0f0")
@@ -31,27 +31,27 @@ class AplicacionMetodosNumericos:
         main_frame = tk.Frame(master, bg="#f0f0f0", padx=15, pady=15)
         main_frame.pack(fill='both', expand=True)
         
-        # Título de la aplicación
+        # Título de la aplicación usando el gestor de idiomas
         titulo_frame = tk.Frame(main_frame, bg="#f0f0f0")
         titulo_frame.pack(fill="x", pady=(0, 15))
         
-        titulo_label = tk.Label(
+        self.titulo_label = tk.Label(
             titulo_frame,
-            text="Aplicación de Métodos Numéricos",
+            text=self.gestor_idiomas.obtener_texto("app_title"),
             font=("Arial", 18, "bold"),
             bg="#f0f0f0",
             fg="#2c3e50"
         )
-        titulo_label.pack()
+        self.titulo_label.pack()
         
-        subtitulo_label = tk.Label(
+        self.subtitulo_label = tk.Label(
             titulo_frame,
-            text="Sistemas de ecuaciones y búsqueda de raíces",
+            text=self.gestor_idiomas.obtener_texto("app_subtitle"),
             font=("Arial", 12),
             bg="#f0f0f0",
             fg="#7f8c8d"
         )
-        subtitulo_label.pack()
+        self.subtitulo_label.pack()
         # Botón para cambiar idioma
         self.idioma_frame = tk.Frame(titulo_frame, bg="#f0f0f0")
         self.idioma_frame.pack(pady=5)
@@ -90,18 +90,18 @@ class AplicacionMetodosNumericos:
         
         # Pestaña para métodos de raíces
         self.tab_raices = tk.Frame(self.notebook, bg="#f5f5f5")
-        self.notebook.add(self.tab_raices, text="Búsqueda de Raíces")
+        self.notebook.add(self.tab_raices, text=self.gestor_idiomas.obtener_texto("tab_roots"))
         
         # Pestaña para sistemas de ecuaciones
         self.tab_sistemas = tk.Frame(self.notebook, bg="#f5f5f5")
-        self.notebook.add(self.tab_sistemas, text="Sistemas de Ecuaciones")
+        self.notebook.add(self.tab_sistemas, text=self.gestor_idiomas.obtener_texto("tab_systems"))
         
         # Pestaña de información
         self.tab_info = tk.Frame(self.notebook, bg="#f5f5f5")
-        self.notebook.add(self.tab_info, text="Información")
+        self.notebook.add(self.tab_info, text=self.gestor_idiomas.obtener_texto("tab_info"))
         
         self.tab_favoritos = tk.Frame(self.notebook, bg="#f5f5f5")
-        self.notebook.add(self.tab_favoritos, text="Favoritos")
+        self.notebook.add(self.tab_favoritos, text=self.gestor_idiomas.obtener_texto("tab_favorites"))
         
         # Configurar las pestañas
         self.setup_tab_raices()
@@ -168,42 +168,215 @@ class AplicacionMetodosNumericos:
         self.actualizar_tab_sistemas()
         self.actualizar_tab_info()
         self.actualizar_tab_favoritos()
-    
     def actualizar_tab_raices(self):
         """Actualiza los textos de la pestaña de raíces"""
-        # Aquí actualizamos todas las etiquetas de texto en la pestaña de raíces
-        # Por ejemplo:
+        # Actualizar botones principales
         if hasattr(self, 'btn_resolver_raices'):
             self.btn_resolver_raices.config(text=self.gestor_idiomas.obtener_texto("calculate_root"))
         
         if hasattr(self, 'btn_guardar_favorito_raices'):
             self.btn_guardar_favorito_raices.config(text=self.gestor_idiomas.obtener_texto("save_as_favorite"))
         
-        # Actualizar etiquetas, cuadros de grupo, etc.
-        # Para cada elemento que tenga texto, usar self.gestor_idiomas.obtener_texto()
-        # Asumiendo que ya has creado los controles en setup_tab_raices
+        # Actualizar etiquetas de método
+        if hasattr(self, 'metodo_label'):
+            self.metodo_label.config(text=self.gestor_idiomas.obtener_texto("method") + ":")
         
-        # Aquí deberías continuar con todas las etiquetas y botones de la pestaña
-        # ...
-    
+        if hasattr(self, 'metodo_frame'):
+            self.metodo_frame.config(text=self.gestor_idiomas.obtener_texto("select_method"))
+        
+        # Actualizar etiquetas de función
+        if hasattr(self, 'funcion_label'):
+            self.funcion_label.config(text=self.gestor_idiomas.obtener_texto("function") + ":")
+        
+        if hasattr(self, 'funcion_frame'):
+            self.funcion_frame.config(text=self.gestor_idiomas.obtener_texto("function_fx"))
+        
+        # Actualizar etiquetas de parámetros
+        if hasattr(self, 'parametros_frame'):
+            self.parametros_frame.config(text=self.gestor_idiomas.obtener_texto("parameters"))
+        
+        if hasattr(self, 'a_label'):
+            self.a_label.config(text=self.gestor_idiomas.obtener_texto("a_left"))
+        
+        if hasattr(self, 'b_label'):
+            self.b_label.config(text=self.gestor_idiomas.obtener_texto("b_right"))
+        
+        if hasattr(self, 'x0_label'):
+            self.x0_label.config(text=self.gestor_idiomas.obtener_texto("x0_approx"))
+        
+        if hasattr(self, 'x1_label'):
+            self.x1_label.config(text=self.gestor_idiomas.obtener_texto("x1_second"))
+        
+        if hasattr(self, 'not_used_label'):
+            self.not_used_label.config(text=self.gestor_idiomas.obtener_texto("not_used"))
+        
+        if hasattr(self, 'tolerancia_label'):
+            self.tolerancia_label.config(text=self.gestor_idiomas.obtener_texto("tolerance"))
+        
+        if hasattr(self, 'max_iter_label'):
+            self.max_iter_label.config(text=self.gestor_idiomas.obtener_texto("max_iterations"))
+        
+        # Actualizar frame de ejemplos
+        if hasattr(self, 'ejemplos_frame'):
+            self.ejemplos_frame.config(text=self.gestor_idiomas.obtener_texto("examples"))
+        
+        if hasattr(self, 'btn_ejemplo_polinomico'):
+            self.btn_ejemplo_polinomico.config(text=self.gestor_idiomas.obtener_texto("polynomial_function"))
+        
+        if hasattr(self, 'btn_ejemplo_trigonometrico'):
+            self.btn_ejemplo_trigonometrico.config(text=self.gestor_idiomas.obtener_texto("trigonometric_function"))
+        
+        # Actualizar resultados
+        if hasattr(self, 'resultados_frame'):
+            self.resultados_frame.config(text=self.gestor_idiomas.obtener_texto("results"))
+        
+        if hasattr(self, 'grafico_frame'):
+            self.grafico_frame.config(text=self.gestor_idiomas.obtener_texto("graph"))
+
     def actualizar_tab_sistemas(self):
         """Actualiza los textos de la pestaña de sistemas"""
-        # Similar a actualizar_tab_raices
-        # ...
-    
+        # Actualizar etiquetas y frames principales
+        if hasattr(self, 'datos_frame'):
+            self.datos_frame.config(text=self.gestor_idiomas.obtener_texto("data_input"))
+        
+        if hasattr(self, 'matriz_a_label'):
+            self.matriz_a_label.config(text=self.gestor_idiomas.obtener_texto("matrix_A"))
+        
+        if hasattr(self, 'vector_b_label'):
+            self.vector_b_label.config(text=self.gestor_idiomas.obtener_texto("vector_b"))
+        
+        if hasattr(self, 'vector_x0_label'):
+            self.vector_x0_label.config(text=self.gestor_idiomas.obtener_texto("vector_x0"))
+        
+        # Actualizar botones
+        if hasattr(self, 'btn_resolver_sistema'):
+            self.btn_resolver_sistema.config(text=self.gestor_idiomas.obtener_texto("solve_system"))
+        
+        if hasattr(self, 'btn_guardar_favorito_sistemas'):
+            self.btn_guardar_favorito_sistemas.config(text=self.gestor_idiomas.obtener_texto("save_as_favorite"))
+        
+        # Actualizar ejemplos
+        if hasattr(self, 'ejemplos_sistemas_frame'):
+            self.ejemplos_sistemas_frame.config(text=self.gestor_idiomas.obtener_texto("examples"))
+        
+        if hasattr(self, 'btn_ejemplo_sistema1'):
+            self.btn_ejemplo_sistema1.config(text=self.gestor_idiomas.obtener_texto("example_1"))
+        
+        if hasattr(self, 'btn_ejemplo_sistema2'):
+            self.btn_ejemplo_sistema2.config(text=self.gestor_idiomas.obtener_texto("example_2"))
+        
+        # Actualizar resultados
+        if hasattr(self, 'resultados_sistemas_frame'):
+            self.resultados_sistemas_frame.config(text=self.gestor_idiomas.obtener_texto("results"))
+        
+        # Actualizar método
+        if hasattr(self, 'metodo_sistemas_label'):
+            self.metodo_sistemas_label.config(text=self.gestor_idiomas.obtener_texto("method") + ":")
+        
+        if hasattr(self, 'metodo_sistemas_frame'):
+            self.metodo_sistemas_frame.config(text=self.gestor_idiomas.obtener_texto("select_method"))
+
     def actualizar_tab_info(self):
         """Actualiza los textos de la pestaña de información"""
-        # ...
-    
+        # Actualizar título y descripción
+        if hasattr(self, 'info_titulo_label'):
+            self.info_titulo_label.config(text=self.gestor_idiomas.obtener_texto("app_name"))
+        
+        if hasattr(self, 'info_descripcion_text'):
+            self.info_descripcion_text.config(state='normal')
+            self.info_descripcion_text.delete(1.0, tk.END)
+            self.info_descripcion_text.insert(tk.END, self.gestor_idiomas.obtener_texto("app_description"))
+            self.info_descripcion_text.config(state='disabled')
+        
+        # Actualizar secciones de métodos
+        if hasattr(self, 'metodos_raices_label'):
+            self.metodos_raices_label.config(text=self.gestor_idiomas.obtener_texto("root_methods"))
+        
+        if hasattr(self, 'metodos_sistemas_label'):
+            self.metodos_sistemas_label.config(text=self.gestor_idiomas.obtener_texto("system_methods"))
+        
+        # Actualizar nombres y descripciones de métodos
+        if hasattr(self, 'biseccion_nombre_label'):
+            self.biseccion_nombre_label.config(text=self.gestor_idiomas.obtener_texto("bisection_name"))
+        
+        if hasattr(self, 'biseccion_desc_label'):
+            self.biseccion_desc_label.config(text=self.gestor_idiomas.obtener_texto("bisection_desc"))
+        
+        if hasattr(self, 'regula_falsi_nombre_label'):
+            self.regula_falsi_nombre_label.config(text=self.gestor_idiomas.obtener_texto("regula_falsi_name"))
+        
+        if hasattr(self, 'regula_falsi_desc_label'):
+            self.regula_falsi_desc_label.config(text=self.gestor_idiomas.obtener_texto("regula_falsi_desc"))
+        
+        if hasattr(self, 'newton_nombre_label'):
+            self.newton_nombre_label.config(text=self.gestor_idiomas.obtener_texto("newton_name"))
+        
+        if hasattr(self, 'newton_desc_label'):
+            self.newton_desc_label.config(text=self.gestor_idiomas.obtener_texto("newton_desc"))
+        
+        if hasattr(self, 'secante_nombre_label'):
+            self.secante_nombre_label.config(text=self.gestor_idiomas.obtener_texto("secant_name"))
+        
+        if hasattr(self, 'secante_desc_label'):
+            self.secante_desc_label.config(text=self.gestor_idiomas.obtener_texto("secant_desc"))
+        
+        if hasattr(self, 'gauss_jordan_nombre_label'):
+            self.gauss_jordan_nombre_label.config(text=self.gestor_idiomas.obtener_texto("gauss_jordan_name"))
+        
+        if hasattr(self, 'gauss_jordan_desc_label'):
+            self.gauss_jordan_desc_label.config(text=self.gestor_idiomas.obtener_texto("gauss_jordan_desc"))
+        
+        if hasattr(self, 'gauss_seidel_nombre_label'):
+            self.gauss_seidel_nombre_label.config(text=self.gestor_idiomas.obtener_texto("gauss_seidel_name"))
+        
+        if hasattr(self, 'gauss_seidel_desc_label'):
+            self.gauss_seidel_desc_label.config(text=self.gestor_idiomas.obtener_texto("gauss_seidel_desc"))
+        
+        if hasattr(self, 'jacobi_nombre_label'):
+            self.jacobi_nombre_label.config(text=self.gestor_idiomas.obtener_texto("jacobi_name"))
+        
+        if hasattr(self, 'jacobi_desc_label'):
+            self.jacobi_desc_label.config(text=self.gestor_idiomas.obtener_texto("jacobi_desc"))
+        
+        # Actualizar pie de página
+        if hasattr(self, 'footer_label'):
+            self.footer_label.config(text=self.gestor_idiomas.obtener_texto("footer_text"))
+
     def actualizar_tab_favoritos(self):
         """Actualiza los textos de la pestaña de favoritos"""
-        # ...
-    
-    # El resto de los métodos de la clase continúan aquí...
-    # Mantener todos los métodos existentes
-    
-    # Para cada método que muestre mensajes o textos, modificar para usar
-    # self.gestor_idiomas.obtener_texto() en lugar de cadenas codificadas
+        # Actualizar título y etiquetas principales
+        if hasattr(self, 'favoritos_titulo_label'):
+            self.favoritos_titulo_label.config(text=self.gestor_idiomas.obtener_texto("my_favorites"))
+        
+        # Actualizar frame de detalles
+        if hasattr(self, 'detalles_frame'):
+            self.detalles_frame.config(text=self.gestor_idiomas.obtener_texto("details"))
+        
+        # Actualizar etiquetas de detalles
+        if hasattr(self, 'nombre_favorito_label'):
+            self.nombre_favorito_label.config(text=self.gestor_idiomas.obtener_texto("name"))
+        
+        if hasattr(self, 'expresion_favorito_label'):
+            self.expresion_favorito_label.config(text=self.gestor_idiomas.obtener_texto("expression"))
+        
+        if hasattr(self, 'descripcion_favorito_label'):
+            self.descripcion_favorito_label.config(text=self.gestor_idiomas.obtener_texto("description"))
+        
+        if hasattr(self, 'fecha_favorito_label'):
+            self.fecha_favorito_label.config(text=self.gestor_idiomas.obtener_texto("creation_date"))
+        
+        # Actualizar botones
+        if hasattr(self, 'btn_cargar_favorito'):
+            self.btn_cargar_favorito.config(text=self.gestor_idiomas.obtener_texto("load_calculator"))
+        
+        if hasattr(self, 'btn_eliminar_favorito'):
+            self.btn_eliminar_favorito.config(text=self.gestor_idiomas.obtener_texto("delete"))
+        
+        # Actualizar encabezados de lista si existe un Treeview
+        if hasattr(self, 'favoritos_tree'):
+            self.favoritos_tree.heading('nombre', text=self.gestor_idiomas.obtener_texto("name"))
+            self.favoritos_tree.heading('tipo', text=self.gestor_idiomas.obtener_texto("function"))
+            self.favoritos_tree.heading('fecha', text=self.gestor_idiomas.obtener_texto("creation_date"))
 
     def setup_tab_raices(self):
         """Configura la pestaña de búsqueda de raíces"""
@@ -221,7 +394,7 @@ class AplicacionMetodosNumericos:
         
         # ===== PANEL IZQUIERDO =====
         # Frame para selección de método
-        metodo_frame = tk.LabelFrame(
+        self.metodo_frame = tk.LabelFrame(
             panel_izquierdo,
             text=self.gestor_idiomas.obtener_texto("method"),
             bg="#f5f5f5",
@@ -230,26 +403,22 @@ class AplicacionMetodosNumericos:
             padx=10,
             pady=10
         )
-        metodo_frame.pack(fill='x', pady=(0, 10))
+        self.metodo_frame.pack(fill='x', pady=(0, 10))
         
-        tk.Label(
-            metodo_frame,
+        self.metodo_label = tk.Label(
+            self.metodo_frame,
             text=self.gestor_idiomas.obtener_texto("select_method"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10)
-        ).pack(side=tk.LEFT, padx=(0, 5))
+        )
+        self.metodo_label.pack(side=tk.LEFT, padx=(0, 5))
         
         self.metodo_raices_var = tk.StringVar()
-        metodos = [
-            self.gestor_idiomas.obtener_texto("bisection_name"),
-            self.gestor_idiomas.obtener_texto("regula_falsi_name"),
-            self.gestor_idiomas.obtener_texto("newton_name"),
-            self.gestor_idiomas.obtener_texto("secant_name")
-        ]
+        metodos = ["Bisección", "Regula Falsi", "Newton", "Secante"]
         
         self.combo_metodo_raices = ttk.Combobox(
-            metodo_frame,
+            self.metodo_frame,
             textvariable=self.metodo_raices_var,
             values=metodos,
             state="readonly",
@@ -263,7 +432,7 @@ class AplicacionMetodosNumericos:
         self.combo_metodo_raices.bind("<<ComboboxSelected>>", self.actualizar_entradas_raices)
         
         # Frame para entrada de función
-        funcion_frame = tk.LabelFrame(
+        self.funcion_frame = tk.LabelFrame(
             panel_izquierdo,
             text=self.gestor_idiomas.obtener_texto("function"),
             bg="#f5f5f5",
@@ -272,104 +441,20 @@ class AplicacionMetodosNumericos:
             padx=10,
             pady=10
         )
-        funcion_frame.pack(fill='x', pady=10)
+        self.funcion_frame.pack(fill='x', pady=10)
         
-        tk.Label(
-            funcion_frame,
+        self.funcion_label = tk.Label(
+            self.funcion_frame,
             text=self.gestor_idiomas.obtener_texto("function_fx"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10),
             anchor="w"
-        ).pack(fill='x', pady=(0, 5))
-        
-        # Continúa con el resto de la interfaz...
-        
-        # Ejemplo de cómo actualizar textos en el resto del método
-        # En lugar de "Parámetros", usamos self.gestor_idiomas.obtener_texto("parameters")
-        # Y así sucesivamente
-
-        # El resto de la implementación de setup_tab_raices sigue igual...
-        # ...
-
-    # Y continúa con el resto de los métodos
-    # ...
-    
-    def setup_tab_raices(self):
-        """Configura la pestaña de búsqueda de raíces"""
-        # Panel principal dividido en dos
-        panel_frame = tk.Frame(self.tab_raices, bg="#f5f5f5")
-        panel_frame.pack(fill='both', expand=True, padx=10, pady=10)
-        
-        # Panel izquierdo para entrada de datos
-        panel_izquierdo = tk.Frame(panel_frame, bg="#f5f5f5")
-        panel_izquierdo.pack(side=tk.LEFT, fill='both', expand=True, padx=(0, 5))
-        
-        # Panel derecho para resultados
-        panel_derecho = tk.Frame(panel_frame, bg="#f5f5f5")
-        panel_derecho.pack(side=tk.RIGHT, fill='both', expand=True, padx=(5, 0))
-        
-        # ===== PANEL IZQUIERDO =====
-        # Frame para selección de método
-        metodo_frame = tk.LabelFrame(
-            panel_izquierdo,
-            text="Método",
-            bg="#f5f5f5",
-            fg="#2c3e50",
-            font=("Arial", 11, "bold"),
-            padx=10,
-            pady=10
         )
-        metodo_frame.pack(fill='x', pady=(0, 10))
-        
-        tk.Label(
-            metodo_frame,
-            text="Seleccionar método:",
-            bg="#f5f5f5",
-            fg="#2c3e50",
-            font=("Arial", 10)
-        ).pack(side=tk.LEFT, padx=(0, 5))
-        
-        self.metodo_raices_var = tk.StringVar()
-        metodos = ["Bisección", "Regula Falsi", "Newton", "Secante"]
-        
-        self.combo_metodo_raices = ttk.Combobox(
-            metodo_frame,
-            textvariable=self.metodo_raices_var,
-            values=metodos,
-            state="readonly",
-            width=15,
-            font=("Arial", 10)
-        )
-        self.combo_metodo_raices.pack(side=tk.LEFT, padx=5)
-        self.combo_metodo_raices.current(0)
-        
-        # Vincular cambio de método
-        self.combo_metodo_raices.bind("<<ComboboxSelected>>", self.actualizar_entradas_raices)
-        
-        # Frame para entrada de función
-        funcion_frame = tk.LabelFrame(
-            panel_izquierdo,
-            text="Función",
-            bg="#f5f5f5",
-            fg="#2c3e50",
-            font=("Arial", 11, "bold"),
-            padx=10,
-            pady=10
-        )
-        funcion_frame.pack(fill='x', pady=10)
-        
-        tk.Label(
-            funcion_frame,
-            text="Función f(x):",
-            bg="#f5f5f5",
-            fg="#2c3e50",
-            font=("Arial", 10),
-            anchor="w"
-        ).pack(fill='x', pady=(0, 5))
+        self.funcion_label.pack(fill='x', pady=(0, 5))
         
         self.entry_funcion = tk.Entry(
-            funcion_frame,
+            self.funcion_frame,
             font=("Courier New", 10),
             bg="white",
             fg="#2c3e50",
@@ -380,30 +465,30 @@ class AplicacionMetodosNumericos:
         self.entry_funcion.insert(0, "x**3 - x - 2")  # Función de ejemplo
         
         # Frame para parámetros
-        self.params_raices_frame = tk.LabelFrame(
+        self.parametros_frame = tk.LabelFrame(
             panel_izquierdo,
-            text="Parámetros",
+            text=self.gestor_idiomas.obtener_texto("parameters"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 11, "bold"),
             padx=10,
             pady=10
         )
-        self.params_raices_frame.pack(fill='x', pady=10)
+        self.parametros_frame.pack(fill='x', pady=10)
         
         # Parámetro a
-        self.lbl_a_frame = tk.Frame(self.params_raices_frame, bg="#f5f5f5")
+        self.lbl_a_frame = tk.Frame(self.parametros_frame, bg="#f5f5f5")
         self.lbl_a_frame.pack(fill='x', pady=5)
         
-        self.lbl_a = tk.Label(
+        self.a_label = tk.Label(
             self.lbl_a_frame,
-            text="a (extremo izquierdo):",
+            text=self.gestor_idiomas.obtener_texto("a_left"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10),
             anchor="w"
         )
-        self.lbl_a.pack(fill='x')
+        self.a_label.pack(fill='x')
         
         self.entry_a = tk.Entry(
             self.lbl_a_frame,
@@ -417,18 +502,18 @@ class AplicacionMetodosNumericos:
         self.entry_a.insert(0, "1")
         
         # Parámetro b
-        self.lbl_b_frame = tk.Frame(self.params_raices_frame, bg="#f5f5f5")
+        self.lbl_b_frame = tk.Frame(self.parametros_frame, bg="#f5f5f5")
         self.lbl_b_frame.pack(fill='x', pady=5)
         
-        self.lbl_b = tk.Label(
+        self.b_label = tk.Label(
             self.lbl_b_frame,
-            text="b (extremo derecho):",
+            text=self.gestor_idiomas.obtener_texto("b_right"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10),
             anchor="w"
         )
-        self.lbl_b.pack(fill='x')
+        self.b_label.pack(fill='x')
         
         self.entry_b = tk.Entry(
             self.lbl_b_frame,
@@ -442,16 +527,17 @@ class AplicacionMetodosNumericos:
         self.entry_b.insert(0, "2")
         
         # Parámetros adicionales
-        param_adicionales_frame = tk.Frame(self.params_raices_frame, bg="#f5f5f5")
+        param_adicionales_frame = tk.Frame(self.parametros_frame, bg="#f5f5f5")
         param_adicionales_frame.pack(fill='x', pady=5)
         
-        tk.Label(
+        self.tolerancia_label = tk.Label(
             param_adicionales_frame,
-            text="Tolerancia:",
+            text=self.gestor_idiomas.obtener_texto("tolerance"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10)
-        ).grid(row=0, column=0, padx=(0, 5), sticky="w")
+        )
+        self.tolerancia_label.grid(row=0, column=0, padx=(0, 5), sticky="w")
         
         self.entry_tol_raices = tk.Entry(
             param_adicionales_frame,
@@ -465,13 +551,14 @@ class AplicacionMetodosNumericos:
         self.entry_tol_raices.grid(row=0, column=1, padx=(0, 15))
         self.entry_tol_raices.insert(0, "1e-6")
         
-        tk.Label(
+        self.max_iter_label = tk.Label(
             param_adicionales_frame,
-            text="Máx. iteraciones:",
+            text=self.gestor_idiomas.obtener_texto("max_iterations"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10)
-        ).grid(row=0, column=2, padx=(0, 5), sticky="w")
+        )
+        self.max_iter_label.grid(row=0, column=2, padx=(0, 5), sticky="w")
         
         self.entry_max_iter_raices = tk.Entry(
             param_adicionales_frame,
@@ -491,7 +578,7 @@ class AplicacionMetodosNumericos:
         
         self.btn_resolver_raices = tk.Button(
             btn_frame,
-            text="Calcular Raíz",
+            text=self.gestor_idiomas.obtener_texto("calculate_root"),
             command=self.resolver_raices,
             bg="#3498db",
             fg="white",
@@ -504,20 +591,20 @@ class AplicacionMetodosNumericos:
         self.btn_resolver_raices.pack(side=tk.RIGHT)
         
         # Botones de ejemplo
-        ejemplos_frame = tk.LabelFrame(
+        self.ejemplos_frame = tk.LabelFrame(
             panel_izquierdo,
-            text="Ejemplos",
+            text=self.gestor_idiomas.obtener_texto("examples"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 11, "bold"),
             padx=10,
             pady=3
         )
-        ejemplos_frame.pack(fill='x', pady=10)
+        self.ejemplos_frame.pack(fill='x', pady=10)
         
-        tk.Button(
-            ejemplos_frame,
-            text="Función Polinómica",
+        self.btn_ejemplo_polinomico = tk.Button(
+            self.ejemplos_frame,
+            text=self.gestor_idiomas.obtener_texto("polynomial_function"),
             command=lambda: self.cargar_ejemplo_raiz(1),
             bg="#2ecc71",
             fg="white",
@@ -526,11 +613,12 @@ class AplicacionMetodosNumericos:
             padx=5,
             pady=1,
             cursor="hand2"
-        ).pack(side=tk.LEFT, padx=(0, 10), pady=2)
+        )
+        self.btn_ejemplo_polinomico.pack(side=tk.LEFT, padx=(0, 10), pady=2)
         
-        tk.Button(
-            ejemplos_frame,
-            text="Función Trigonométrica",
+        self.btn_ejemplo_trigonometrico = tk.Button(
+            self.ejemplos_frame,
+            text=self.gestor_idiomas.obtener_texto("trigonometric_function"),
             command=lambda: self.cargar_ejemplo_raiz(2),
             bg="#2ecc71",
             fg="white",
@@ -539,46 +627,45 @@ class AplicacionMetodosNumericos:
             padx=5,
             pady=1,
             cursor="hand2"
-        ).pack(side=tk.LEFT, pady=2)
+        )
+        self.btn_ejemplo_trigonometrico.pack(side=tk.LEFT, pady=2)
         
         self.btn_guardar_favorito_raices = tk.Button(
-        btn_frame,
-        text="Guardar como Favorito",
-        command=self.guardar_favorito_raices,
-        bg="#2ecc71",  # Verde
-        fg="white",
-        font=("Arial", 10, "bold"),
-        relief="flat",
-        padx=10,
-        pady=5,
-        cursor="hand2"
+            btn_frame,
+            text=self.gestor_idiomas.obtener_texto("save_as_favorite"),
+            command=self.guardar_favorito_raices,
+            bg="#2ecc71",
+            fg="white",
+            font=("Arial", 10, "bold"),
+            relief="flat",
+            padx=10,
+            pady=5,
+            cursor="hand2"
         )
         self.btn_guardar_favorito_raices.pack(side=tk.LEFT)
 
         # ===== PANEL DERECHO =====
-        # Frame para resultados
-
         # Crear un frame contenedor para resultados y gráfico
         contenedor_frames = tk.Frame(panel_derecho, bg="#f5f5f5")
         contenedor_frames.pack(fill='both', expand=True)
         
         # Frame para resultados (mitad superior)
-        resultados_frame = tk.LabelFrame(
+        self.resultados_frame = tk.LabelFrame(
             contenedor_frames,
-            text="Resultados",
+            text=self.gestor_idiomas.obtener_texto("results"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 11, "bold"),
             padx=10,
             pady=10
         )
-        resultados_frame.pack(fill='both', expand=True, pady=(0, 5))
+        self.resultados_frame.pack(fill='both', expand=True, pady=(0, 5))
         
         # Área de texto para mostrar resultados
         self.txt_resultados_raices = scrolledtext.ScrolledText(
-            resultados_frame,
+            self.resultados_frame,
             width=45,
-            height=10,  # Reducido para equilibrar con el gráfico
+            height=10,
             font=("Courier New", 10),
             bg="white",
             fg="#2c3e50"
@@ -586,26 +673,25 @@ class AplicacionMetodosNumericos:
         self.txt_resultados_raices.pack(fill='both', expand=True)
         
         # Frame para gráfico (mitad inferior)
-        grafico_frame = tk.LabelFrame(
+        self.grafico_frame = tk.LabelFrame(
             contenedor_frames,
-            text="Gráfico",
+            text=self.gestor_idiomas.obtener_texto("graph"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 11, "bold"),
             padx=10,
             pady=10
         )
-        grafico_frame.pack(fill='both', expand=True, pady=(5, 0))
+        self.grafico_frame.pack(fill='both', expand=True, pady=(5, 0))
         
         # Contenedor para el gráfico de matplotlib
         self.fig_raices = plt.Figure(dpi=100)
         self.ax_raices = self.fig_raices.add_subplot(111)
-        self.canvas_raices = FigureCanvasTkAgg(self.fig_raices, grafico_frame)
+        self.canvas_raices = FigureCanvasTkAgg(self.fig_raices, self.grafico_frame)
         self.canvas_raices.get_tk_widget().pack(fill='both', expand=True)
         
         # Inicializar la interfaz
-        self.actualizar_entradas_raices(None)
-
+        self.actualizar_entradas_raices(None)    
     def setup_tab_sistemas(self):
         """Configura la pestaña de sistemas de ecuaciones"""
         # Dividir en dos paneles
@@ -1037,22 +1123,21 @@ Cada método posee características particulares que los hacen más adecuados pa
         metodo = self.metodo_raices_var.get()
         
         if metodo in ["Bisección", "Regula Falsi"]:
-            self.lbl_a.config(text="a (extremo izquierdo):")
-            self.lbl_b.config(text="b (extremo derecho):")
+            self.a_label.config(text=self.gestor_idiomas.obtener_texto("a_left"))
+            self.b_label.config(text=self.gestor_idiomas.obtener_texto("b_right"))
             self.entry_b.config(state="normal")
         elif metodo == "Newton":
-            self.lbl_a.config(text="x0 (aproximación inicial):")
-            self.lbl_b.config(text="No se usa:")
+            self.a_label.config(text=self.gestor_idiomas.obtener_texto("x0_approx"))
+            self.b_label.config(text=self.gestor_idiomas.obtener_texto("not_used"))
             self.entry_b.config(state="disabled")
         elif metodo == "Secante":
-            self.lbl_a.config(text="x0 (primera aproximación):")
-            self.lbl_b.config(text="x1 (segunda aproximación):")
+            self.a_label.config(text=self.gestor_idiomas.obtener_texto("x0_first"))
+            self.b_label.config(text=self.gestor_idiomas.obtener_texto("x1_second"))
             self.entry_b.config(state="normal")
-    
     def cargar_ejemplo_raiz(self, num_ejemplo):
         """Carga ejemplos predefinidos para búsqueda de raíces"""
         if num_ejemplo == 1:
-        # Ejemplo de función polinómica
+            # Ejemplo de función polinómica
             self.entry_funcion.delete(0, tk.END)
             self.entry_funcion.insert(0, "x**3 - x - 2")
             self.entry_a.delete(0, tk.END)
@@ -1061,10 +1146,10 @@ Cada método posee características particulares que los hacen más adecuados pa
             self.entry_b.insert(0, "2")
             self.combo_metodo_raices.set("Bisección")
             self.actualizar_entradas_raices(None)
-            self.status_bar.config(text="Ejemplo polinómico cargado: f(x) = x³ - x - 2")
+            self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('polynomial_function')} f(x) = x³ - x - 2")
         
         elif num_ejemplo == 2:
-        # Ejemplo de función trigonométrica
+            # Ejemplo de función trigonométrica
             self.entry_funcion.delete(0, tk.END)
             self.entry_funcion.insert(0, "sin(x) - x/2")
             self.entry_a.delete(0, tk.END)
@@ -1073,8 +1158,7 @@ Cada método posee características particulares que los hacen más adecuados pa
             self.entry_b.insert(0, "2")
             self.combo_metodo_raices.set("Regula Falsi")
             self.actualizar_entradas_raices(None)
-            self.status_bar.config(text="Ejemplo trigonométrico cargado: f(x) = sin(x) - x/2")
-
+            self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('trigonometric_function')} f(x) = sin(x) - x/2")
     def cargar_ejemplo1(self):
         """Carga un ejemplo básico de sistema 3x3"""
         self.txt_matriz_a.delete("1.0", tk.END)
@@ -1103,22 +1187,24 @@ Cada método posee características particulares que los hacen más adecuados pa
     def resolver_raices(self):
         """Resuelve una ecuación para encontrar sus raíces usando el método seleccionado"""
         try:
-            self.status_bar.config(text="Calculando raíz...")
+            self.status_bar.config(text=self.gestor_idiomas.obtener_texto("calculating_root"))
             self.master.update_idletasks()
             
             # Obtener función y convertirla a expresión simbólica
             f_str = self.entry_funcion.get().strip()
             if not f_str:
-                messagebox.showerror("Error", "La función no puede estar vacía")
-                self.status_bar.config(text="Error: Función vacía")
+                messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                    self.gestor_idiomas.obtener_texto("function_empty"))
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_empty_function"))
                 return
             
             try:
                 x = Symbol('x')
                 f = sympify(f_str)
             except Exception as e:
-                messagebox.showerror("Error", f"Error al analizar la función: {e}")
-                self.status_bar.config(text="Error en la función")
+                messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                    f"{self.gestor_idiomas.obtener_texto('error_parsing_function')}: {e}")
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_in_function"))
                 return
             
             # Obtener parámetros adicionales
@@ -1126,8 +1212,9 @@ Cada método posee características particulares que los hacen más adecuados pa
                 tol = float(self.entry_tol_raices.get())
                 max_iter = int(self.entry_max_iter_raices.get())
             except ValueError:
-                messagebox.showerror("Error", "La tolerancia y el máximo de iteraciones deben ser números")
-                self.status_bar.config(text="Error en los parámetros")
+                messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                    self.gestor_idiomas.obtener_texto("error_tolerance_iterations"))
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_in_parameters"))
                 return
             
             # Obtener método y parámetros específicos
@@ -1143,99 +1230,102 @@ Cada método posee características particulares que los hacen más adecuados pa
                     a = float(self.entry_a.get())
                     b = float(self.entry_b.get())
                     
-                    self.txt_resultados_raices.insert(tk.END, f"Método de Bisección\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Función: {f_str}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Intervalo: [{a}, {b}]\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Tolerancia: {tol}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Máximo de iteraciones: {max_iter}\n\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('bisection method')}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('function')}: {f_str}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('interval')}: [{a}, {b}]\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('tolerance')}: {tol}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('max iterations')}: {max_iter}\n\n")
                     
                     raiz, pasos = biseccion(f, a, b, tol, max_iter)
                     self._mostrar_resultados_raiz(raiz, pasos, f)
                 except Exception as e:
-                    messagebox.showerror("Error", f"Error al ejecutar el método: {e}")
-                    self.status_bar.config(text=f"Error: {str(e)}")
+                    messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                        f"{self.gestor_idiomas.obtener_texto('error_executing_method')}: {e}")
+                    self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('error')}: {str(e)}")
             
             elif metodo == "Regula Falsi":
                 try:
                     a = float(self.entry_a.get())
                     b = float(self.entry_b.get())
                     
-                    self.txt_resultados_raices.insert(tk.END, f"Método de Regula Falsi\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Función: {f_str}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Intervalo: [{a}, {b}]\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Tolerancia: {tol}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Máximo de iteraciones: {max_iter}\n\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('regula falsi method')}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('function')}: {f_str}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('interval')}: [{a}, {b}]\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('tolerance')}: {tol}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('max iterations')}: {max_iter}\n\n")
                     
                     raiz, pasos = regula_falsi(f, a, b, tol, max_iter)
                     self._mostrar_resultados_raiz(raiz, pasos, f)
                 except Exception as e:
-                    messagebox.showerror("Error", f"Error al ejecutar el método: {e}")
-                    self.status_bar.config(text=f"Error: {str(e)}")
+                    messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                        f"{self.gestor_idiomas.obtener_texto('error_executing_method')}: {e}")
+                    self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('error')}: {str(e)}")
             
             elif metodo == "Newton":
                 try:
                     x0 = float(self.entry_a.get())
                     
-                    self.txt_resultados_raices.insert(tk.END, f"Método de Newton\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Función: {f_str}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Aproximación inicial: {x0}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Tolerancia: {tol}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Máximo de iteraciones: {max_iter}\n\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('newton method')}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('function')}: {f_str}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('initial approximation')}: {x0}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('tolerance')}: {tol}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('max iterations')}: {max_iter}\n\n")
                     
                     raiz, pasos = newton(f, x0, tol, max_iter)
                     self._mostrar_resultados_raiz(raiz, pasos, f)
                 except Exception as e:
-                    messagebox.showerror("Error", f"Error al ejecutar el método: {e}")
-                    self.status_bar.config(text=f"Error: {str(e)}")
+                    messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                        f"{self.gestor_idiomas.obtener_texto('error_executing_method')}: {e}")
+                    self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('error')}: {str(e)}")
             
             elif metodo == "Secante":
                 try:
                     x0 = float(self.entry_a.get())
                     x1 = float(self.entry_b.get())
                     
-                    self.txt_resultados_raices.insert(tk.END, f"Método de la Secante\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Función: {f_str}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Primera aproximación: {x0}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Segunda aproximación: {x1}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Tolerancia: {tol}\n")
-                    self.txt_resultados_raices.insert(tk.END, f"Máximo de iteraciones: {max_iter}\n\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('secant method')}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('function')}: {f_str}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('first approximation')}: {x0}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('second approximation')}: {x1}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('tolerance')}: {tol}\n")
+                    self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('max iterations')}: {max_iter}\n\n")
                     
                     raiz, pasos = secante(f, x0, x1, tol, max_iter)
                     self._mostrar_resultados_raiz(raiz, pasos, f)
                 except Exception as e:
-                    messagebox.showerror("Error", f"Error al ejecutar el método: {e}")
-                    self.status_bar.config(text=f"Error: {str(e)}")
+                    messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                        f"{self.gestor_idiomas.obtener_texto('error_executing_method')}: {e}")
+                    self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('error')}: {str(e)}")
         
         except Exception as e:
-            messagebox.showerror("Error", f"Error inesperado: {e}")
-            self.status_bar.config(text="Error inesperado")
-    
+            messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                f"{self.gestor_idiomas.obtener_texto('unexpected_error')}: {e}")
+            self.status_bar.config(text=self.gestor_idiomas.obtener_texto("unexpected_error"))
     def _mostrar_resultados_raiz(self, raiz, pasos, f):
         """Muestra los resultados de los métodos de búsqueda de raíces"""
         if raiz is None:
-            self.txt_resultados_raices.insert(tk.END, "El método no pudo encontrar una raíz.\n")
-            self.status_bar.config(text="No se encontró raíz")
+            self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('method_no_root')}\n")
+            self.status_bar.config(text=self.gestor_idiomas.obtener_texto("no_root_found"))
             return
         
         # Mostrar pasos
-        self.txt_resultados_raices.insert(tk.END, "ITERACIONES:\n")
+        self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('iterations').upper()}:\n")
         for i, paso in enumerate(pasos):
-            self.txt_resultados_raices.insert(tk.END, f"Iteración {i+1}: x = {paso:.8f}\n")
+            self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('iteration')} {i+1}: x = {paso:.8f}\n")
         
         # Mostrar resultado final
-        self.txt_resultados_raices.insert(tk.END, "\nRESULTADO FINAL:\n")
-        self.txt_resultados_raices.insert(tk.END, f"Raíz aproximada: {raiz:.8f}\n")
+        self.txt_resultados_raices.insert(tk.END, f"\n{self.gestor_idiomas.obtener_texto('final_result').upper()}:\n")
+        self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('approximate_root')}: {raiz:.8f}\n")
         
         x = Symbol('x')
         f_val = float(f.subs(x, raiz))
         self.txt_resultados_raices.insert(tk.END, f"f({raiz:.8f}) = {f_val:.8e}\n")
-        self.txt_resultados_raices.insert(tk.END, f"Número de iteraciones: {len(pasos)}\n")
+        self.txt_resultados_raices.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('number_of_iterations')}: {len(pasos)}\n")
         
         # Graficar la función y la raíz
         self._graficar_funcion(f, raiz, pasos)
         
-        self.status_bar.config(text=f"Raíz encontrada: {raiz:.8f}")
-
+        self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('root_found')}: {raiz:.8f}")
     def _graficar_funcion(self, f, raiz, pasos):
         """Grafica la función y la raíz encontrada"""
         try:
@@ -1262,7 +1352,8 @@ Cada método posee características particulares que los hacen más adecuados pa
             self.ax_raices.axhline(y=0, color='k', linestyle='-', alpha=0.3)
             
             # Marcar la raíz
-            self.ax_raices.plot([raiz], [0], 'ro', markersize=8, label=f'Raíz: {raiz:.6f}')
+            root_label = f"{self.gestor_idiomas.obtener_texto('root')}: {raiz:.6f}"
+            self.ax_raices.plot([raiz], [0], 'ro', markersize=8, label=root_label)
             
             # Graficar evolución de las aproximaciones
             if len(pasos) > 0:
@@ -1271,8 +1362,8 @@ Cada método posee características particulares que los hacen más adecuados pa
                 
                 # Crear un segundo eje para las iteraciones
                 ax2 = self.ax_raices.twinx()
-                ax2.plot(pasos_x, pasos_y, 'g-o', alpha=0.7, label='Convergencia')
-                ax2.set_ylabel('Valor de x')
+                ax2.plot(pasos_x, pasos_y, 'g-o', alpha=0.7, label=self.gestor_idiomas.obtener_texto('convergence'))
+                ax2.set_ylabel(self.gestor_idiomas.obtener_texto('x_value'))
                 ax2.tick_params(axis='y', labelcolor='g')
                 
                 # Añadir leyenda para el segundo eje
@@ -1285,7 +1376,7 @@ Cada método posee características particulares que los hacen más adecuados pa
             # Configurar gráfico
             self.ax_raices.set_xlabel('x')
             self.ax_raices.set_ylabel('f(x)')
-            self.ax_raices.set_title('Gráfica de la función y su raíz')
+            self.ax_raices.set_title(self.gestor_idiomas.obtener_texto('function_graph_and_root'))
             self.ax_raices.grid(True, alpha=0.3)
             
             # Actualizar gráfico
@@ -1296,41 +1387,43 @@ Cada método posee características particulares que los hacen más adecuados pa
         except Exception as e:
             print(f"Error al graficar: {e}")
             # Mostrar el error en la interfaz para mejor depuración
-            messagebox.showerror("Error de gráfica", f"Error al graficar: {e}")
-
+            messagebox.showerror(self.gestor_idiomas.obtener_texto("graph_error"), 
+                                f"{self.gestor_idiomas.obtener_texto('error_graphing')}: {e}")
     def resolver_sistema(self):
         """Resuelve el sistema de ecuaciones según el método seleccionado"""
         try:
-            self.status_bar.config(text="Resolviendo sistema...")
+            self.status_bar.config(text=self.gestor_idiomas.obtener_texto("solving_system"))
             self.master.update_idletasks()
             
             # Validar y obtener la matriz A
             valido_a, matriz_a = vt.validar_matriz_texto(self.txt_matriz_a.get("1.0", "end-1c"))
             if not valido_a:
-                self.status_bar.config(text="Error en el formato de la matriz A")
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_matrix_a_format"))
                 return
             
             # Validar y obtener el vector b
             valido_b, vector_b = vt.validar_vector_texto(self.txt_vector_b.get())
             if not valido_b:
-                self.status_bar.config(text="Error en el formato del vector b")
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_vector_b_format"))
                 return
             
             # Validar sistema
             valido_sistema, A, b = vt.validar_sistema_ecuaciones(matriz_a, vector_b)
             if not valido_sistema:
-                self.status_bar.config(text="Error en el sistema de ecuaciones")
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_equation_system"))
                 return
             
             # Obtener parámetros adicionales
-            valido_tol, tolerancia = vt.validar_numero(self.txt_tolerancia.get(), "La tolerancia debe ser un número")
+            valido_tol, tolerancia = vt.validar_numero(self.txt_tolerancia.get(), 
+                                                    self.gestor_idiomas.obtener_texto("tolerance_must_be_number"))
             if not valido_tol:
-                self.status_bar.config(text="Error en el valor de tolerancia")
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_tolerance_value"))
                 return
                 
-            valido_iter, max_iter = vt.validar_entero(self.txt_max_iter.get(), "El máximo de iteraciones debe ser un entero")
+            valido_iter, max_iter = vt.validar_entero(self.txt_max_iter.get(), 
+                                                    self.gestor_idiomas.obtener_texto("max_iter_must_be_integer"))
             if not valido_iter:
-                self.status_bar.config(text="Error en el número máximo de iteraciones")
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_max_iterations"))
                 return
             
             # Vector inicial (opcional)
@@ -1338,48 +1431,48 @@ Cada método posee características particulares que los hacen más adecuados pa
             if self.txt_vector_x0.get().strip():
                 valido_x0, x0 = vt.validar_vector_texto(self.txt_vector_x0.get())
                 if not valido_x0:
-                    self.status_bar.config(text="Error en el formato del vector inicial x0")
+                    self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_x0_vector_format"))
                     return
                 
                 # Verificar dimensiones de x0
                 if len(x0) != A.shape[1]:
-                    messagebox.showwarning("Advertencia", 
-                                        f"Dimensiones incompatibles: x0 tiene {len(x0)} elementos pero debería tener {A.shape[1]}")
-                    self.status_bar.config(text="Error: dimensiones incompatibles del vector x0")
+                    messagebox.showwarning(self.gestor_idiomas.obtener_texto("warning"), 
+                                        f"{self.gestor_idiomas.obtener_texto('incompatible_dimensions')}: x0 {self.gestor_idiomas.obtener_texto('has')} {len(x0)} {self.gestor_idiomas.obtener_texto('elements_but_should_have')} {A.shape[1]}")
+                    self.status_bar.config(text=self.gestor_idiomas.obtener_texto("error_incompatible_dimensions_x0"))
                     return
             
             # Resolver según el método seleccionado
             metodo = self.metodo_var.get()
             
             self.txt_resultados.delete("1.0", tk.END)
-            self.txt_resultados.insert(tk.END, f"MÉTODO: {metodo}\n")
+            self.txt_resultados.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('method')}: {metodo}\n")
             self.txt_resultados.insert(tk.END, "="*45 + "\n\n")
-            self.txt_resultados.insert(tk.END, f"Matriz A:\n{A}\n\n")
-            self.txt_resultados.insert(tk.END, f"Vector b:\n{b}\n\n")
+            self.txt_resultados.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('matrix_A')}:\n{A}\n\n")
+            self.txt_resultados.insert(tk.END, f"{self.gestor_idiomas.obtener_texto('vector_b')}:\n{b}\n\n")
             self.txt_resultados.insert(tk.END, "="*45 + "\n\n")
             
             if metodo == "Gauss-Jordan":
                 solucion, pasos = gauss_jordan(A, b)
                 if solucion is not None:
                     self.mostrar_resultados_gauss_jordan(solucion, pasos)
-                    self.status_bar.config(text=f"Sistema resuelto con el método de {metodo}")
+                    self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('system_solved_with')} {metodo}")
             
             elif metodo == "Gauss-Seidel":
                 solucion, pasos = gauss_seidel(A, b, x0, tolerancia, max_iter)
                 if solucion is not None:
                     self.mostrar_resultados_iterativos(solucion, pasos, "Gauss-Seidel")
-                    self.status_bar.config(text=f"Sistema resuelto con el método de {metodo} en {len(pasos)-1} iteraciones")
+                    self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('system_solved_with')} {metodo} {self.gestor_idiomas.obtener_texto('in')} {len(pasos)-1} {self.gestor_idiomas.obtener_texto('iterations')}")
             
             elif metodo == "Jacobi":
                 solucion, pasos = jacobi(A, b, x0, tolerancia, max_iter)
                 if solucion is not None:
                     self.mostrar_resultados_iterativos(solucion, pasos, "Jacobi")
-                    self.status_bar.config(text=f"Sistema resuelto con el método de {metodo} en {len(pasos)-1} iteraciones")
+                    self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('system_solved_with')} {metodo} {self.gestor_idiomas.obtener_texto('in')} {len(pasos)-1} {self.gestor_idiomas.obtener_texto('iterations')}")
         
         except Exception as e:
-            messagebox.showerror("Error", f"Ocurrió un error: {e}")
-            self.status_bar.config(text=f"Error: {str(e)}")
-    
+            messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                f"{self.gestor_idiomas.obtener_texto('error_occurred')}: {e}")
+            self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('error')}: {str(e)}")
     def setup_tab_favoritos(self):
         """Configura la pestaña de favoritos"""
         # Panel principal
@@ -1399,23 +1492,23 @@ Cada método posee características particulares que los hacen más adecuados pa
         panel_derecho.pack(side=tk.RIGHT, fill='both', expand=True, padx=(5, 0))
         
         # Lista de favoritos
-        lista_frame = tk.LabelFrame(
+        self.lista_frame = tk.LabelFrame(
             panel_izquierdo,
-            text="Mis Favoritos",
+            text=self.gestor_idiomas.obtener_texto("my_favorites"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 11, "bold"),
             padx=10,
             pady=10
         )
-        lista_frame.pack(fill='both', expand=True)
+        self.lista_frame.pack(fill='both', expand=True)
         
         # Lista con scrollbar
-        scrollbar = tk.Scrollbar(lista_frame)
+        scrollbar = tk.Scrollbar(self.lista_frame)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
         self.lista_favoritos = tk.Listbox(
-            lista_frame,
+            self.lista_frame,
             bg="white",
             fg="#2c3e50",
             font=("Arial", 10),
@@ -1436,29 +1529,30 @@ Cada método posee características particulares que los hacen más adecuados pa
         self.lista_favoritos.bind('<<ListboxSelect>>', self.mostrar_detalles_favorito)
         
         # Panel de detalles
-        detalles_frame = tk.LabelFrame(
+        self.detalles_frame = tk.LabelFrame(
             panel_derecho,
-            text="Detalles",
+            text=self.gestor_idiomas.obtener_texto("details"),
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 11, "bold"),
             padx=10,
             pady=10
         )
-        detalles_frame.pack(fill='both', expand=True)
+        self.detalles_frame.pack(fill='both', expand=True)
         
         # Nombre
-        tk.Label(
-            detalles_frame,
-            text="Nombre:",
+        self.nombre_favorito_label = tk.Label(
+            self.detalles_frame,
+            text=self.gestor_idiomas.obtener_texto("name") + ":",
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10, "bold"),
             anchor="w"
-        ).pack(fill='x', pady=(10, 0))
+        )
+        self.nombre_favorito_label.pack(fill='x', pady=(10, 0))
         
         self.lbl_nombre_fav = tk.Label(
-            detalles_frame,
+            self.detalles_frame,
             text="",
             bg="#f5f5f5",
             fg="#2c3e50",
@@ -1468,17 +1562,18 @@ Cada método posee características particulares que los hacen más adecuados pa
         self.lbl_nombre_fav.pack(fill='x', pady=(0, 10))
         
         # Expresión
-        tk.Label(
-            detalles_frame,
-            text="Expresión:",
+        self.expresion_favorito_label = tk.Label(
+            self.detalles_frame,
+            text=self.gestor_idiomas.obtener_texto("expression") + ":",
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10, "bold"),
             anchor="w"
-        ).pack(fill='x', pady=(0, 0))
+        )
+        self.expresion_favorito_label.pack(fill='x', pady=(0, 0))
         
         self.lbl_expresion_fav = tk.Label(
-            detalles_frame,
+            self.detalles_frame,
             text="",
             bg="#f5f5f5",
             fg="#2c3e50",
@@ -1488,17 +1583,18 @@ Cada método posee características particulares que los hacen más adecuados pa
         self.lbl_expresion_fav.pack(fill='x', pady=(0, 10))
         
         # Descripción
-        tk.Label(
-            detalles_frame,
-            text="Descripción:",
+        self.descripcion_favorito_label = tk.Label(
+            self.detalles_frame,
+            text=self.gestor_idiomas.obtener_texto("description") + ":",
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10, "bold"),
             anchor="w"
-        ).pack(fill='x', pady=(0, 0))
+        )
+        self.descripcion_favorito_label.pack(fill='x', pady=(0, 0))
         
         self.lbl_descripcion_fav = tk.Label(
-            detalles_frame,
+            self.detalles_frame,
             text="",
             bg="#f5f5f5",
             fg="#2c3e50",
@@ -1509,17 +1605,18 @@ Cada método posee características particulares que los hacen más adecuados pa
         self.lbl_descripcion_fav.pack(fill='x', pady=(0, 10))
         
         # Fecha
-        tk.Label(
-            detalles_frame,
-            text="Fecha de creación:",
+        self.fecha_favorito_label = tk.Label(
+            self.detalles_frame,
+            text=self.gestor_idiomas.obtener_texto("creation_date") + ":",
             bg="#f5f5f5",
             fg="#2c3e50",
             font=("Arial", 10, "bold"),
             anchor="w"
-        ).pack(fill='x', pady=(0, 0))
+        )
+        self.fecha_favorito_label.pack(fill='x', pady=(0, 0))
         
         self.lbl_fecha_fav = tk.Label(
-            detalles_frame,
+            self.detalles_frame,
             text="",
             bg="#f5f5f5",
             fg="#2c3e50",
@@ -1529,12 +1626,12 @@ Cada método posee características particulares que los hacen más adecuados pa
         self.lbl_fecha_fav.pack(fill='x', pady=(0, 10))
         
         # Botones de acción
-        botones_frame = tk.Frame(detalles_frame, bg="#f5f5f5")
+        botones_frame = tk.Frame(self.detalles_frame, bg="#f5f5f5")
         botones_frame.pack(fill='x', pady=10)
         
-        self.btn_cargar_fav = tk.Button(
+        self.btn_cargar_favorito = tk.Button(
             botones_frame,
-            text="Cargar en Calculadora",
+            text=self.gestor_idiomas.obtener_texto("load_calculator"),
             command=self.cargar_favorito_seleccionado,
             bg="#3498db",
             fg="white",
@@ -1545,11 +1642,11 @@ Cada método posee características particulares que los hacen más adecuados pa
             cursor="hand2",
             state="disabled"
         )
-        self.btn_cargar_fav.pack(side=tk.LEFT, padx=(0, 10))
+        self.btn_cargar_favorito.pack(side=tk.LEFT, padx=(0, 10))
         
-        self.btn_eliminar_fav = tk.Button(
+        self.btn_eliminar_favorito = tk.Button(
             botones_frame,
-            text="Eliminar",
+            text=self.gestor_idiomas.obtener_texto("delete"),
             command=self.eliminar_favorito,
             bg="#e74c3c",
             fg="white",
@@ -1560,8 +1657,7 @@ Cada método posee características particulares que los hacen más adecuados pa
             cursor="hand2",
             state="disabled"
         )
-        self.btn_eliminar_fav.pack(side=tk.LEFT)
-
+        self.btn_eliminar_favorito.pack(side=tk.LEFT)
     def cargar_lista_favoritos(self):
         """Carga la lista de favoritos desde el gestor"""
         # Comprobar si la lista existe
