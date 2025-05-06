@@ -1652,3 +1652,28 @@ Cada método posee características particulares que los hacen más adecuados pa
             # Mostrar el error específico
             messagebox.showerror("Error", f"No se pudo guardar el favorito: {str(e)}")
             print(f"Error al guardar favorito: {e}")  # Para depuración
+    def mostrar_resultados_gauss_jordan(self, solucion, pasos):
+        """Muestra los resultados del método de Gauss-Jordan"""
+        self.txt_resultados.insert(tk.END, "Pasos del método de Gauss-Jordan:\n\n")
+        
+        for i, paso in enumerate(pasos):
+            self.txt_resultados.insert(tk.END, f"Paso {i+1}:\n")
+            self.txt_resultados.insert(tk.END, f"{paso}\n\n")
+        
+        self.txt_resultados.insert(tk.END, "Solución:\n")
+        for i, val in enumerate(solucion):
+            self.txt_resultados.insert(tk.END, f"x{i+1} = {val:.6f}\n")
+    
+    def mostrar_resultados_iterativos(self, solucion, pasos, metodo):
+        """Muestra los resultados de métodos iterativos (Gauss-Seidel, Jacobi)"""
+        self.txt_resultados.insert(tk.END, f"Iteraciones del método de {metodo}:\n\n")
+        
+        for i, paso in enumerate(pasos):
+            self.txt_resultados.insert(tk.END, f"Iteración {i}:\n")
+            self.txt_resultados.insert(tk.END, f"{paso}\n\n")
+        
+        self.txt_resultados.insert(tk.END, "Solución final:\n")
+        for i, val in enumerate(solucion):
+            self.txt_resultados.insert(tk.END, f"x{i+1} = {val:.6f}\n")
+        
+        self.txt_resultados.insert(tk.END, f"\nConvergencia alcanzada en {len(pasos)-1} iteraciones")
