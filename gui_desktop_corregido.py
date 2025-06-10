@@ -12,6 +12,8 @@ from tkinter import simpledialog
 from favoritos import GestorFavoritos
 from metodos_raices import biseccion, regula_falsi, newton, secante
 from metodos_sistemas import gauss_seidel, jacobi, gauss_jordan
+from metodos_integracion import regla_trapecios, simpson_1_3, simpson_3_8
+from metodos_ecuaciones_diferenciales import runge_kutta_1er_orden, runge_kutta_4to_orden, calcular_k_values, mostrar_k_values_detallado
 import Validar_txt as vt
 from idiomas import GestorIdiomas
 
@@ -96,6 +98,14 @@ class AplicacionMetodosNumericos:
         self.tab_sistemas = tk.Frame(self.notebook, bg="#f5f5f5")
         self.notebook.add(self.tab_sistemas, text=self.gestor_idiomas.obtener_texto("tab_systems"))
         
+        # Pestaña para integración numérica
+        self.tab_integracion = tk.Frame(self.notebook, bg="#f5f5f5")
+        self.notebook.add(self.tab_integracion, text=self.gestor_idiomas.obtener_texto("tab_integration"))
+        
+        # Pestaña para ecuaciones diferenciales
+        self.tab_ecuaciones_diff = tk.Frame(self.notebook, bg="#f5f5f5")
+        self.notebook.add(self.tab_ecuaciones_diff, text=self.gestor_idiomas.obtener_texto("tab_differential_equations"))
+        
         # Pestaña de información
         self.tab_info = tk.Frame(self.notebook, bg="#f5f5f5")
         self.notebook.add(self.tab_info, text=self.gestor_idiomas.obtener_texto("tab_info"))
@@ -106,6 +116,8 @@ class AplicacionMetodosNumericos:
         # Configurar las pestañas
         self.setup_tab_raices()
         self.setup_tab_sistemas()
+        self.setup_tab_integracion()
+        self.setup_tab_ecuaciones_diff()
         self.setup_tab_info()
         self.setup_tab_favoritos()
 
@@ -157,8 +169,10 @@ class AplicacionMetodosNumericos:
         # Actualizar pestañas
         self.notebook.tab(0, text=self.gestor_idiomas.obtener_texto("tab_roots"))
         self.notebook.tab(1, text=self.gestor_idiomas.obtener_texto("tab_systems"))
-        self.notebook.tab(2, text=self.gestor_idiomas.obtener_texto("tab_info"))
-        self.notebook.tab(3, text=self.gestor_idiomas.obtener_texto("tab_favorites"))
+        self.notebook.tab(2, text=self.gestor_idiomas.obtener_texto("tab_integration"))
+        self.notebook.tab(3, text=self.gestor_idiomas.obtener_texto("tab_differential_equations"))
+        self.notebook.tab(4, text=self.gestor_idiomas.obtener_texto("tab_info"))
+        self.notebook.tab(5, text=self.gestor_idiomas.obtener_texto("tab_favorites"))
         
         # Actualizar barra de estado
         self.status_bar.config(text=self.gestor_idiomas.obtener_texto("ready_status"))
@@ -166,6 +180,8 @@ class AplicacionMetodosNumericos:
         # Actualizar contenido de las pestañas
         self.actualizar_tab_raices()
         self.actualizar_tab_sistemas()
+        self.actualizar_tab_integracion()
+        self.actualizar_tab_ecuaciones_diff()
         self.actualizar_tab_info()
         self.actualizar_tab_favoritos()
     def actualizar_tab_raices(self):
@@ -377,6 +393,78 @@ class AplicacionMetodosNumericos:
             self.favoritos_tree.heading('nombre', text=self.gestor_idiomas.obtener_texto("name"))
             self.favoritos_tree.heading('tipo', text=self.gestor_idiomas.obtener_texto("function"))
             self.favoritos_tree.heading('fecha', text=self.gestor_idiomas.obtener_texto("creation_date"))
+
+    def actualizar_tab_integracion(self):
+        """Actualiza los textos de la pestaña de integración"""
+        # Actualizar frames principales
+        if hasattr(self, 'metodo_integracion_frame'):
+            self.metodo_integracion_frame.config(text=self.gestor_idiomas.obtener_texto("integration_method"))
+        
+        if hasattr(self, 'funcion_int_frame'):
+            self.funcion_int_frame.config(text=self.gestor_idiomas.obtener_texto("function_to_integrate"))
+        
+        if hasattr(self, 'limites_frame'):
+            self.limites_frame.config(text=self.gestor_idiomas.obtener_texto("integration_limits"))
+        
+        # Actualizar etiquetas
+        if hasattr(self, 'fx_int_label'):
+            self.fx_int_label.config(text="f(x) =")
+        
+        if hasattr(self, 'limite_inferior_label'):
+            self.limite_inferior_label.config(text=self.gestor_idiomas.obtener_texto("lower_limit"))
+        
+        if hasattr(self, 'limite_superior_label'):
+            self.limite_superior_label.config(text=self.gestor_idiomas.obtener_texto("upper_limit"))
+        
+        if hasattr(self, 'num_intervalos_label'):
+            self.num_intervalos_label.config(text=self.gestor_idiomas.obtener_texto("number_intervals"))
+        
+        # Actualizar botones
+        if hasattr(self, 'btn_calcular_integral'):
+            self.btn_calcular_integral.config(text=self.gestor_idiomas.obtener_texto("calculate_integral"))
+        
+        # Actualizar frame de resultados
+        if hasattr(self, 'resultados_int_frame'):
+            self.resultados_int_frame.config(text=self.gestor_idiomas.obtener_texto("results"))
+
+    def actualizar_tab_ecuaciones_diff(self):
+        """Actualiza los textos de la pestaña de ecuaciones diferenciales"""
+        # Actualizar frames principales
+        if hasattr(self, 'metodo_edo_frame'):
+            self.metodo_edo_frame.config(text=self.gestor_idiomas.obtener_texto("resolution_method"))
+        
+        if hasattr(self, 'ecuacion_frame'):
+            self.ecuacion_frame.config(text=self.gestor_idiomas.obtener_texto("differential_equation"))
+        
+        if hasattr(self, 'condiciones_frame'):
+            self.condiciones_frame.config(text=self.gestor_idiomas.obtener_texto("initial_conditions_parameters"))
+        
+        # Actualizar etiquetas
+        if hasattr(self, 'dy_dx_label'):
+            self.dy_dx_label.config(text="dy/dx = f(x,y) =")
+        
+        if hasattr(self, 'x0_edo_label'):
+            self.x0_edo_label.config(text=self.gestor_idiomas.obtener_texto("initial_x_value"))
+        
+        if hasattr(self, 'y0_edo_label'):
+            self.y0_edo_label.config(text=self.gestor_idiomas.obtener_texto("initial_y_value"))
+        
+        if hasattr(self, 'h_edo_label'):
+            self.h_edo_label.config(text=self.gestor_idiomas.obtener_texto("step_size"))
+        
+        if hasattr(self, 'x_final_edo_label'):
+            self.x_final_edo_label.config(text=self.gestor_idiomas.obtener_texto("final_x_value"))
+        
+        # Actualizar botones
+        if hasattr(self, 'btn_resolver_edo'):
+            self.btn_resolver_edo.config(text=self.gestor_idiomas.obtener_texto("solve_ode"))
+        
+        if hasattr(self, 'btn_mostrar_k_values'):
+            self.btn_mostrar_k_values.config(text=self.gestor_idiomas.obtener_texto("show_k_calculation"))
+        
+        # Actualizar frame de resultados
+        if hasattr(self, 'resultados_edo_frame'):
+            self.resultados_edo_frame.config(text=self.gestor_idiomas.obtener_texto("results"))
 
     def setup_tab_raices(self):
         """Configura la pestaña de búsqueda de raíces"""
@@ -1873,6 +1961,601 @@ Cada método posee características particulares que los hacen más adecuados pa
                     messagebox.showerror("Error", f"No se pudo guardar el favorito: {str(e)}")
                     print(f"Error al guardar favorito: {e}")  # Para depuración
                 
+    def setup_tab_integracion(self):
+        """Configura la pestaña de integración numérica"""
+        # Panel principal dividido en dos
+        panel_frame = tk.Frame(self.tab_integracion, bg="#f5f5f5")
+        panel_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Panel izquierdo para entrada de datos
+        panel_izquierdo = tk.Frame(panel_frame, bg="#f5f5f5")
+        panel_izquierdo.pack(side=tk.LEFT, fill='both', expand=True, padx=(0, 5))
+        
+        # Panel derecho para resultados
+        panel_derecho = tk.Frame(panel_frame, bg="#f5f5f5")
+        panel_derecho.pack(side=tk.RIGHT, fill='both', expand=True, padx=(5, 0))
+        
+        # ===== PANEL IZQUIERDO =====
+        # Frame para selección de método
+        self.metodo_integracion_frame = tk.LabelFrame(
+            panel_izquierdo,
+            text=self.gestor_idiomas.obtener_texto("integration_method"),
+            bg="#f5f5f5",
+            fg="#2c3e50",
+            font=("Arial", 11, "bold"),
+            padx=10,
+            pady=10
+        )
+        self.metodo_integracion_frame.pack(fill='x', pady=(0, 10))
+        
+        self.metodo_integracion_var = tk.StringVar()
+        metodos_int = [self.gestor_idiomas.obtener_texto("trapezoidal_rule"), 
+                       self.gestor_idiomas.obtener_texto("simpson_1_3"), 
+                       self.gestor_idiomas.obtener_texto("simpson_3_8")]
+        
+        self.combo_metodo_integracion = ttk.Combobox(
+            self.metodo_integracion_frame,
+            textvariable=self.metodo_integracion_var,
+            values=metodos_int,
+            state="readonly",
+            width=20,
+            font=("Arial", 10)
+        )
+        self.combo_metodo_integracion.pack(pady=5)
+        self.combo_metodo_integracion.current(0)
+        # Frame para entrada de función
+        self.funcion_int_frame = tk.LabelFrame(
+        panel_izquierdo,
+        text=self.gestor_idiomas.obtener_texto("function_to_integrate"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 11, "bold"),
+        padx=10,
+        pady=10
+        )
+        self.funcion_int_frame.pack(fill='x', pady=10)
+        
+        self.fx_int_label = tk.Label(
+        self.funcion_int_frame,
+        text="f(x) =",
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 10)
+        )
+        self.fx_int_label.pack(anchor="w", pady=(0, 5))
+        
+        self.entry_funcion_int = tk.Entry(
+        self.funcion_int_frame,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50",
+        relief="solid",
+        bd=1
+        )
+        self.entry_funcion_int.pack(fill='x', pady=(0, 10))
+        self.entry_funcion_int.insert(0, "x**2")  # Función de ejemplo
+        
+        # Frame para límites de integración
+        self.limites_frame = tk.LabelFrame(
+        panel_izquierdo,
+        text=self.gestor_idiomas.obtener_texto("integration_limits"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 11, "bold"),
+        padx=10,
+        pady=10
+        )
+        self.limites_frame.pack(fill='x', pady=10)
+        
+        # Límite inferior
+        self.limite_inferior_label = tk.Label(
+        self.limites_frame,
+        text=self.gestor_idiomas.obtener_texto("lower_limit"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 10)
+        )
+        self.limite_inferior_label.pack(anchor="w")
+        
+        self.entry_a_int = tk.Entry(
+        self.limites_frame,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50",
+        relief="solid",
+        bd=1
+        )
+        self.entry_a_int.pack(fill='x', pady=(0, 10))
+        self.entry_a_int.insert(0, "0")
+        
+        # Límite superior
+        self.limite_superior_label = tk.Label(
+        self.limites_frame,
+        text=self.gestor_idiomas.obtener_texto("upper_limit"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 10)
+        )
+        self.limite_superior_label.pack(anchor="w")
+        
+        self.entry_b_int = tk.Entry(
+        self.limites_frame,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50",
+        relief="solid",
+        bd=1
+        )
+        self.entry_b_int.pack(fill='x', pady=(0, 10))
+        self.entry_b_int.insert(0, "1")
+        
+        # Número de intervalos
+        self.num_intervalos_label = tk.Label(
+        self.limites_frame,
+        text=self.gestor_idiomas.obtener_texto("number_intervals"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 10)
+        )
+        self.num_intervalos_label.pack(anchor="w")
+        
+        self.entry_n_int = tk.Entry(
+        self.limites_frame,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50",
+        relief="solid",
+        bd=1
+        )
+        self.entry_n_int.pack(fill='x', pady=(0, 10))
+        self.entry_n_int.insert(0, "100")
+        
+        # Botón para calcular
+        btn_frame_int = tk.Frame(panel_izquierdo, bg="#f5f5f5")
+        btn_frame_int.pack(fill='x', pady=10)
+        
+        self.btn_calcular_integral = tk.Button(
+        btn_frame_int,
+        text=self.gestor_idiomas.obtener_texto("calculate_integral"),
+        command=self.calcular_integral,
+        bg="#3498db",
+        fg="white",
+        font=("Arial", 10, "bold"),
+        relief="flat",
+        padx=10,
+        pady=5,
+        cursor="hand2"
+        )
+        self.btn_calcular_integral.pack(side=tk.RIGHT)
+        
+        # ===== PANEL DERECHO =====
+        # Frame para resultados
+        self.resultados_int_frame = tk.LabelFrame(
+        panel_derecho,
+        text=self.gestor_idiomas.obtener_texto("results"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 11, "bold"),
+        padx=10,
+        pady=10
+        )
+        self.resultados_int_frame.pack(fill='both', expand=True)
+        
+        # Área de texto para mostrar resultados
+        self.txt_resultados_int = scrolledtext.ScrolledText(
+        self.resultados_int_frame,
+        width=45,
+        height=25,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50"
+        )
+        self.txt_resultados_int.pack(fill='both', expand=True, pady=5)
+        
+    def setup_tab_ecuaciones_diff(self):
+        """Configura la pestaña de ecuaciones diferenciales"""
+        # Panel principal dividido en dos
+        panel_frame = tk.Frame(self.tab_ecuaciones_diff, bg="#f5f5f5")
+        panel_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Panel izquierdo para entrada de datos
+        panel_izquierdo = tk.Frame(panel_frame, bg="#f5f5f5")
+        panel_izquierdo.pack(side=tk.LEFT, fill='both', expand=True, padx=(0, 5))
+        
+        # Panel derecho para resultados
+        panel_derecho = tk.Frame(panel_frame, bg="#f5f5f5")
+        panel_derecho.pack(side=tk.RIGHT, fill='both', expand=True, padx=(5, 0))
+        
+        # ===== PANEL IZQUIERDO =====
+        # Frame para selección de método
+        self.metodo_edo_frame = tk.LabelFrame(
+        panel_izquierdo,
+        text=self.gestor_idiomas.obtener_texto("resolution_method"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 11, "bold"),
+        padx=10,
+        pady=10
+        )
+        self.metodo_edo_frame.pack(fill='x', pady=(0, 10))
+        
+        self.metodo_edo_var = tk.StringVar()
+        metodos_edo = [self.gestor_idiomas.obtener_texto("runge_kutta_1st_order"), 
+        self.gestor_idiomas.obtener_texto("runge_kutta_4th_order")]
+        
+        self.combo_metodo_edo = ttk.Combobox(
+        self.metodo_edo_frame,
+        textvariable=self.metodo_edo_var,
+        values=metodos_edo,
+        state="readonly",
+        width=25,
+        font=("Arial", 10)
+        )
+        self.combo_metodo_edo.pack(pady=5)
+        self.combo_metodo_edo.current(0)
+        
+        # Frame para ecuación diferencial
+        self.ecuacion_frame = tk.LabelFrame(
+        panel_izquierdo,
+        text=self.gestor_idiomas.obtener_texto("differential_equation"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 11, "bold"),
+        padx=10,
+        pady=10
+        )
+        self.ecuacion_frame.pack(fill='x', pady=10)
+        
+        self.dy_dx_label = tk.Label(
+        self.ecuacion_frame,
+        text="dy/dx = f(x,y) =",
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 10)
+        )
+        self.dy_dx_label.pack(anchor="w", pady=(0, 5))
+        
+        self.entry_ecuacion_diff = tk.Entry(
+        self.ecuacion_frame,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50",
+        relief="solid",
+        bd=1
+        )
+        self.entry_ecuacion_diff.pack(fill='x', pady=(0, 10))
+        self.entry_ecuacion_diff.insert(0, "x + y")  # Ecuación de ejemplo
+        
+        # Frame para condiciones iniciales
+        self.condiciones_frame = tk.LabelFrame(
+        panel_izquierdo,
+        text=self.gestor_idiomas.obtener_texto("initial_conditions_parameters"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 11, "bold"),
+        padx=10,
+        pady=10
+        )
+        self.condiciones_frame.pack(fill='x', pady=10)
+        
+        # x0
+        self.x0_edo_label = tk.Label(
+        self.condiciones_frame,
+        text=self.gestor_idiomas.obtener_texto("initial_x_value"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 10)
+        )
+        self.x0_edo_label.pack(anchor="w")
+        
+        self.entry_x0_edo = tk.Entry(
+        self.condiciones_frame,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50",
+        relief="solid",
+        bd=1
+        )
+        self.entry_x0_edo.pack(fill='x', pady=(0, 10))
+        self.entry_x0_edo.insert(0, "0")
+        
+        # y0
+        self.y0_edo_label = tk.Label(
+        self.condiciones_frame,
+        text=self.gestor_idiomas.obtener_texto("initial_y_value"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 10)
+        )
+        self.y0_edo_label.pack(anchor="w")
+        
+        self.entry_y0_edo = tk.Entry(
+        self.condiciones_frame,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50",
+        relief="solid",
+        bd=1
+        )
+        self.entry_y0_edo.pack(fill='x', pady=(0, 10))
+        self.entry_y0_edo.insert(0, "1")
+        
+        # h (tamaño del paso)
+        self.h_edo_label = tk.Label(
+        self.condiciones_frame,
+        text=self.gestor_idiomas.obtener_texto("step_size"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 10)
+        )
+        self.h_edo_label.pack(anchor="w")
+        
+        self.entry_h_edo = tk.Entry(
+        self.condiciones_frame,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50",
+        relief="solid",
+        bd=1
+        )
+        self.entry_h_edo.pack(fill='x', pady=(0, 10))
+        self.entry_h_edo.insert(0, "0.1")
+        
+        # x_final
+        self.x_final_edo_label = tk.Label(
+        self.condiciones_frame,
+        text=self.gestor_idiomas.obtener_texto("final_x_value"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 10)
+        )
+        self.x_final_edo_label.pack(anchor="w")
+        
+        self.entry_x_final_edo = tk.Entry(
+        self.condiciones_frame,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50",
+        relief="solid",
+        bd=1
+        )
+        self.entry_x_final_edo.pack(fill='x', pady=(0, 10))
+        self.entry_x_final_edo.insert(0, "1")
+        
+        # Botones
+        btn_frame_edo = tk.Frame(panel_izquierdo, bg="#f5f5f5")
+        btn_frame_edo.pack(fill='x', pady=10)
+        
+        self.btn_resolver_edo = tk.Button(
+        btn_frame_edo,
+        text=self.gestor_idiomas.obtener_texto("solve_ode"),
+        command=self.resolver_ecuacion_diferencial,
+        bg="#3498db",
+        fg="white",
+        font=("Arial", 10, "bold"),
+        relief="flat",
+        padx=10,
+        pady=5,
+        cursor="hand2"
+        )
+        self.btn_resolver_edo.pack(side=tk.RIGHT, padx=(5, 0))
+        
+        self.btn_mostrar_k_values = tk.Button(
+        btn_frame_edo,
+        text=self.gestor_idiomas.obtener_texto("show_k_calculation"),
+        command=self.mostrar_calculo_k,
+        bg="#2ecc71",
+        fg="white",
+        font=("Arial", 10, "bold"),
+        relief="flat",
+        padx=10,
+        pady=5,
+        cursor="hand2"
+        )
+        self.btn_mostrar_k_values.pack(side=tk.RIGHT)
+        
+        # ===== PANEL DERECHO =====
+        # Frame para resultados
+        self.resultados_edo_frame = tk.LabelFrame(
+        panel_derecho,
+        text=self.gestor_idiomas.obtener_texto("results"),
+        bg="#f5f5f5",
+        fg="#2c3e50",
+        font=("Arial", 11, "bold"),
+        padx=10,
+        pady=10
+        )
+        self.resultados_edo_frame.pack(fill='both', expand=True)
+        
+        # Área de texto para mostrar resultados
+        self.txt_resultados_edo = scrolledtext.ScrolledText(
+        self.resultados_edo_frame,
+        width=45,
+        height=25,
+        font=("Courier New", 10),
+        bg="white",
+        fg="#2c3e50"
+        )
+        self.txt_resultados_edo.pack(fill='both', expand=True, pady=5)
+        
+    def calcular_integral(self):
+        try:
+            # Obtener datos de entrada
+            f_str = self.entry_funcion_int.get().strip()
+            if not f_str:
+                messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                    self.gestor_idiomas.obtener_texto("function_cannot_be_empty"))
+                return
+
+            a = float(self.entry_a_int.get())
+            b = float(self.entry_b_int.get())
+            n = int(self.entry_n_int.get())
+
+            # Convertir función a expresión simbólica
+            from sympy import Symbol, sympify
+            x = Symbol('x')
+            f = sympify(f_str)
+
+            # Obtener método seleccionado
+            metodo = self.metodo_integracion_var.get()
+
+            # Limpiar resultados anteriores
+            self.txt_resultados_int.delete("1.0", tk.END)
+
+            # Calcular según el método
+            if metodo == self.gestor_idiomas.obtener_texto("trapezoidal_rule"):
+                resultado, pasos = regla_trapecios(f, a, b, n)
+            elif metodo == self.gestor_idiomas.obtener_texto("simpson_1_3"):
+                resultado, pasos = simpson_1_3(f, a, b, n)
+            elif metodo == self.gestor_idiomas.obtener_texto("simpson_3_8"):
+                resultado, pasos = simpson_3_8(f, a, b, n)
+            else:
+                messagebox.showerror("Error", "Método de integración no reconocido")
+                return
+
+            if resultado is not None:
+                self.mostrar_resultados_integracion(resultado, pasos)
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("integral_calculated").format(f"{resultado:.8f}"))
+            
+        except Exception as e:
+            messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                self.gestor_idiomas.obtener_texto("error_calculating_integral").format(e))
+            self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('error')}: {str(e)}")
+
+
+    def mostrar_resultados_integracion(self, resultado, pasos):
+        """Muestra los resultados de la integración"""
+        self.txt_resultados_int.insert(tk.END, f"MÉTODO: {pasos['metodo']}\n")
+        self.txt_resultados_int.insert(tk.END, "=" * 50 + "\n\n")
+        self.txt_resultados_int.insert(tk.END, f"Función: f(x) = {pasos['funcion']}\n")
+        self.txt_resultados_int.insert(tk.END, f"Límites: [{pasos['limites'][0]}, {pasos['limites'][1]}]\n")
+        self.txt_resultados_int.insert(tk.END, f"Número de intervalos: {pasos['n_intervalos']}\n")
+        self.txt_resultados_int.insert(tk.END, f"Tamaño del paso (h): {pasos['h']:.6f}\n\n")
+
+        self.txt_resultados_int.insert(tk.END, f"RESULTADO:\n")
+        self.txt_resultados_int.insert(tk.END, f"∫ f(x) dx ≈ {resultado:.8f}\n\n")
+
+        self.txt_resultados_int.insert(tk.END, "PUNTOS DE EVALUACIÓN (primeros 10):\n")
+        for i in range(min(10, len(pasos['puntos_x']))):
+            x_val = pasos['puntos_x'][i]
+            y_val = pasos['puntos_y'][i]
+            self.txt_resultados_int.insert(tk.END, f"f({x_val:.4f}) = {y_val:.6f}\n")
+
+        if len(pasos['puntos_x']) > 10:
+            self.txt_resultados_int.insert(tk.END, f"... y {len(pasos['puntos_x']) - 10} puntos más\n")
+
+
+    def resolver_ecuacion_diferencial(self):
+        """Resuelve la ecuación diferencial usando el método seleccionado"""
+        try:
+            # Obtener datos de entrada
+            f_str = self.entry_ecuacion_diff.get().strip()
+            if not f_str:
+                messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                    self.gestor_idiomas.obtener_texto("differential_equation_cannot_be_empty"))
+                return
+
+            x0 = float(self.entry_x0_edo.get())
+            y0 = float(self.entry_y0_edo.get())
+            h = float(self.entry_h_edo.get())
+            x_final = float(self.entry_x_final_edo.get())
+
+            from sympy import Symbol, sympify
+            x, y = Symbol('x'), Symbol('y')
+            f = sympify(f_str)
+
+            metodo = self.metodo_edo_var.get()
+
+            self.txt_resultados_edo.delete("1.0", tk.END)
+
+            if "1er Orden" in metodo or "1st Order" in metodo:
+                solucion, pasos = runge_kutta_1er_orden(f, x0, y0, h, x_final)
+            elif "4to Orden" in metodo or "4th Order" in metodo:
+                solucion, pasos = runge_kutta_4to_orden(f, x0, y0, h, x_final)
+            else:
+                messagebox.showerror("Error", "Método no reconocido")
+                return
+
+            if solucion is not None:
+                self.mostrar_resultados_edo(solucion, pasos)
+                self.status_bar.config(text=self.gestor_idiomas.obtener_texto("ode_solved").format(pasos['n_pasos']))
+            
+        except Exception as e:
+            messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                self.gestor_idiomas.obtener_texto("error_solving_ode").format(e))
+            self.status_bar.config(text=f"{self.gestor_idiomas.obtener_texto('error')}: {str(e)}")
+
+
+    def mostrar_resultados_edo(self, solucion, pasos):
+        """Muestra los resultados de la ecuación diferencial"""
+        self.txt_resultados_edo.insert(tk.END, f"MÉTODO: {pasos['metodo']}\n")
+        self.txt_resultados_edo.insert(tk.END, "=" * 50 + "\n\n")
+        self.txt_resultados_edo.insert(tk.END, f"Ecuación: dy/dx = {pasos['ecuacion']}\n")
+        self.txt_resultados_edo.insert(tk.END, f"Condiciones iniciales: (x₀, y₀) = {pasos['condiciones_iniciales']}\n")
+        self.txt_resultados_edo.insert(tk.END, f"Tamaño del paso: h = {pasos['h']}\n")
+        self.txt_resultados_edo.insert(tk.END, f"Valor final de x: {pasos['x_final']}\n")
+        self.txt_resultados_edo.insert(tk.END, f"Número de pasos: {pasos['n_pasos']}\n\n")
+
+        self.txt_resultados_edo.insert(tk.END, "SOLUCIÓN:\n")
+        self.txt_resultados_edo.insert(tk.END, f"{'i':<3} {'x':<10} {'y':<12}\n")
+        self.txt_resultados_edo.insert(tk.END, "-" * 25 + "\n")
+
+        for i, (x_val, y_val) in enumerate(solucion):
+            self.txt_resultados_edo.insert(tk.END, f"{i:<3} {x_val:<10.4f} {y_val:<12.6f}\n")
+
+        if "4to Orden" in pasos['metodo'] and len(pasos['pasos_detallados']) > 0:
+            self.txt_resultados_edo.insert(tk.END, f"\nPRIMEROS 3 PASOS DETALLADOS:\n")
+            for i, paso in enumerate(pasos['pasos_detallados'][:3]):
+                self.txt_resultados_edo.insert(tk.END, f"\nPaso {paso['iteracion']}:\n")
+                self.txt_resultados_edo.insert(tk.END, f"  k1 = {paso['k1']:.6f}\n")
+                self.txt_resultados_edo.insert(tk.END, f"  k2 = {paso['k2']:.6f}\n")
+                self.txt_resultados_edo.insert(tk.END, f"  k3 = {paso['k3']:.6f}\n")
+                self.txt_resultados_edo.insert(tk.END, f"  k4 = {paso['k4']:.6f}\n")
+                self.txt_resultados_edo.insert(tk.END, f"  y_{paso['iteracion']} = {paso['y_next']:.6f}\n")
+
+
+    def mostrar_calculo_k(self):
+        """Muestra el cálculo detallado de los valores k para un paso"""
+        try:
+            f_str = self.entry_ecuacion_diff.get().strip()
+            if not f_str:
+                messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                    self.gestor_idiomas.obtener_texto("differential_equation_cannot_be_empty"))
+                return
+
+            x0 = float(self.entry_x0_edo.get())
+            y0 = float(self.entry_y0_edo.get())
+            h = float(self.entry_h_edo.get())
+
+            from sympy import Symbol, sympify
+            f = sympify(f_str)
+
+            descripcion = mostrar_k_values_detallado(f, x0, y0, h)
+
+            ventana_k = tk.Toplevel(self.master)
+            ventana_k.title(self.gestor_idiomas.obtener_texto("k_values_calculation"))
+            ventana_k.geometry("600x500")
+            ventana_k.configure(bg="#f5f5f5")
+
+            frame_k = tk.Frame(ventana_k, bg="#f5f5f5")
+            frame_k.pack(fill='both', expand=True, padx=10, pady=10)
+
+            txt_k = scrolledtext.ScrolledText(
+                frame_k,
+                width=70,
+                height=25,
+                font=("Courier New", 10),
+                bg="white",
+                fg="#2c3e50"
+            )
+            txt_k.pack(fill='both', expand=True)
+            txt_k.insert(tk.END, descripcion)
+            txt_k.config(state='disabled')
+
+        except Exception as e:
+            messagebox.showerror(self.gestor_idiomas.obtener_texto("error"), 
+                                self.gestor_idiomas.obtener_texto("error_calculating_k_values").format(e))
+
     def guardar_favorito_sistemas(self):
         """Guarda el sistema actual como favorito"""
         # Obtener matriz A y vector b
